@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class Grid : MonoBehaviour
 {
+	public GameObject tilePrefab;
+	public GameObject tiles;
+
 	public Vector2 gridWorldSize; // defines the grid size
 	public float nodeRadius; // radius of each node/tile
 	Node[,] grid;
@@ -17,6 +20,7 @@ public class Grid : MonoBehaviour
 		gridSizeX = Mathf.RoundToInt(gridWorldSize.x / nodeDiameter);
 		gridSizeY = Mathf.RoundToInt(gridWorldSize.y / nodeDiameter);
 		CreateGrid(); // creates the grid using the creategrid() function
+		this.gameObject.transform.localScale = new Vector3(gridWorldSize.x, 0.1f, gridWorldSize.y);
 	}
 
 	void CreateGrid()
@@ -31,9 +35,12 @@ public class Grid : MonoBehaviour
 				Vector3 worldPoint = worldBottomLeft + Vector3.right * (x * nodeDiameter + nodeRadius) + Vector3.forward * (y * nodeDiameter + nodeRadius);
 				bool walkable = !(Physics.CheckSphere(worldPoint, nodeRadius, unwalkable));
 				grid[x, y] = new Node(walkable, worldPoint); // creates the new node with walkable and world point
+				GameObject tile = Instantiate(tilePrefab, new Vector3(worldPoint.x, 0.1f, worldPoint.z), Quaternion.identity);
+				tile.transform.SetParent(tiles.transform, true);
 			}
 		}
 	}
+
 
 	public Node NodeFromWorldPoint(Vector3 worldPosition)
 	{ // sets node from the world point
@@ -47,7 +54,7 @@ public class Grid : MonoBehaviour
 		return grid[x, y]; // returns the grid with the x and y values
 	}
 
-	void OnDrawGizmos()
+	/*void OnDrawGizmos()
 	{
 		Gizmos.DrawWireCube(transform.position, new Vector3(gridWorldSize.x, 1, gridWorldSize.y));
 
@@ -60,7 +67,7 @@ public class Grid : MonoBehaviour
 				Gizmos.DrawCube(n.worldPosition, Vector3.one * (nodeDiameter - .1f)); // draws a cube on each node
 			}
 		}
-	}
+	}*/
 
 	public Node[,] getGrid()
     {
@@ -68,15 +75,4 @@ public class Grid : MonoBehaviour
     }
 }
 
-public class Node
-{ // defines the nodes
 
-	public bool walkable; // walkable for cars and characters
-	public Vector3 worldPosition;
-
-	public Node(bool _walkable, Vector3 _worldPos)
-	{
-		walkable = _walkable;
-		worldPosition = _worldPos;
-	}
-}
