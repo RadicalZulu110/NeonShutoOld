@@ -24,6 +24,7 @@ public class Buildings : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+
         if(tiles == null)
             tiles = grid.getGrid();
 

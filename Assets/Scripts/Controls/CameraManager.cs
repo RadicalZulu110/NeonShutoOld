@@ -42,6 +42,9 @@ public class CameraManager : MonoBehaviour
         KeybordInputManager.OnMoveInput += UpdateFrameMove;
         KeybordInputManager.OnRotateInput += UpdateFrameRotate;
         KeybordInputManager.OnZoomInput += UpdateFrameZoom;
+        MouseInputManager.OnMoveInput += UpdateFrameMove;
+        MouseInputManager.OnRotateInput += UpdateFrameRotate;
+        MouseInputManager.OnZoomInput += UpdateFrameZoom;
     }
 
     private void OnDisable()
@@ -49,6 +52,9 @@ public class CameraManager : MonoBehaviour
         KeybordInputManager.OnMoveInput -= UpdateFrameMove;
         KeybordInputManager.OnRotateInput -= UpdateFrameRotate;
         KeybordInputManager.OnZoomInput -= UpdateFrameZoom;
+        MouseInputManager.OnMoveInput -= UpdateFrameMove;
+        MouseInputManager.OnRotateInput -= UpdateFrameRotate;
+        MouseInputManager.OnZoomInput -= UpdateFrameZoom;
     }
 
     private void UpdateFrameZoom(float zoomAmount)
