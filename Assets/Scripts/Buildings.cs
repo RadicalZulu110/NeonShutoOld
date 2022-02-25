@@ -17,15 +17,17 @@ public class Buildings : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        tiles = grid.getGrid();
+        
         isDeleting = false;
     }
 
     // Update is called once per frame
     void Update()
     {
+        if(grid == null)
+            grid = GameObject.FindGameObjectWithTag("Grid").GetComponent<Grid>();
 
-        if(tiles == null)
+        if (tiles == null)
             tiles = grid.getGrid();
 
         if (Input.GetKeyDown(KeyCode.Mouse0) && buildingToPlace != null)
@@ -34,15 +36,19 @@ public class Buildings : MonoBehaviour
             distanceNode = float.MaxValue;
             foreach(Node tile in tiles)
             {
-                dist = Vector3.Distance(tile.worldPosition, customCursor.gameObject.transform.position);
-                if(dist < distanceNode)
+                if (!tile.isOcupied())
                 {
-                    distanceNode = dist;
-                    nearNode = tile;
+                    dist = Vector3.Distance(tile.worldPosition, customCursor.gameObject.transform.position);
+                    if (dist < distanceNode)
+                    {
+                        distanceNode = dist;
+                        nearNode = tile;
+                    }
                 }
             }
 
             Instantiate(buildingToPlace, nearNode.worldPosition, Quaternion.identity);
+            nearNode.setOcupied(true);
             buildingToPlace = null;
             customCursor.gameObject.SetActive(false);
             Cursor.visible = true;
@@ -53,7 +59,7 @@ public class Buildings : MonoBehaviour
             Ray ray = camera.ScreenPointToRay(Input.mousePosition);
             if(Physics.Raycast(ray, out RaycastHit hitInfo))
             {
-                if(hitInfo.collider.gameObject != null)
+                if(hitInfo.collider.gameObject != null && hitInfo.collider.gameObject.tag == "Buildings")
                 {
                     Destroy(hitInfo.collider.gameObject);
                 }
