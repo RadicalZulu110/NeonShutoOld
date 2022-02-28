@@ -8,6 +8,7 @@ TagManager:
   - Buildings
   - Tile
   - TileManager
+  - Road
   layers:
   - Default
   - TransparentFX
