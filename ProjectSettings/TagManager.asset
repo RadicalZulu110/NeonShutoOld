@@ -5,6 +5,9 @@ TagManager:
   serializedVersion: 2
   tags:
   - Grid
+  - Buildings
+  - Tile
+  - TileManager
   layers:
   - Default
   - TransparentFX
