@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class Buildings : MonoBehaviour
 {
-    private GameObject buildingToPlace, roadToPlace;
-    public CustomCursor customCursor, customCursorRoad;
+    private GameObject buildingToPlace, roadToPlace, initialToPlace;
+    public CustomCursor customCursor, customCursorRoad, customCursorInitial;
     public Grid grid;
     public GameObject[,] tiles;
     public Camera camera;
@@ -90,6 +90,37 @@ public class Buildings : MonoBehaviour
             grid.checkTilesRoads();
         }
 
+        // Create initial building
+        if (Input.GetKeyDown(KeyCode.Mouse0) && initialToPlace != null)
+        {
+            nearNode = null;
+            distanceNode = float.MaxValue;
+            for (int i = 0; i < tiles.GetLength(0); i++)
+            {
+                for (int j = 0; j < tiles.GetLength(1); j++)
+                {
+                    if (!tiles[i, j].GetComponent<Node>().isOcupied() && tiles[i, j].activeInHierarchy)
+                    {
+                        dist = Vector3.Distance(tiles[i, j].transform.position, customCursorInitial.gameObject.transform.position);
+                        if (dist < distanceNode)
+                        {
+                            distanceNode = dist;
+                            nearNode = tiles[i, j];
+                        }
+                    }
+                }
+            }
+
+            Instantiate(initialToPlace, new Vector3(nearNode.transform.position.x, 2, nearNode.transform.position.z), Quaternion.identity);
+            nearNode.GetComponent<Node>().setOcupied(true);
+            nearNode.GetComponent<Node>().setInitial(true);
+            initialToPlace = null;
+            customCursorInitial.gameObject.SetActive(false);
+            Cursor.visible = true;
+            grid.setTilesActive(false);
+            grid.checkTilesRoads();
+        }
+
         // Delete building or road
         if (Input.GetKeyDown(KeyCode.Mouse0) && isDeleting)
         {
@@ -120,10 +151,20 @@ public class Buildings : MonoBehaviour
     // Button event to create a road
     public void createRoad(GameObject road)
     {
-        grid.setTilesActive(true);
+        grid.setTilesNearRoadActive(true);
         customCursorRoad.gameObject.SetActive(true);
         Cursor.visible = false;
         roadToPlace = road;
+        isDeleting = false;
+    }
+
+    // Button event to create initial building
+    public void createInitial(GameObject building)
+    {
+        grid.setTilesActive(true);
+        customCursorInitial.gameObject.SetActive(true);
+        Cursor.visible = false;
+        initialToPlace = building;
         isDeleting = false;
     }
 

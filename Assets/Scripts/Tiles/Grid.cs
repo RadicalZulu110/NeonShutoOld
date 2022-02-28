@@ -6,7 +6,7 @@ public class Grid : MonoBehaviour
 {
 	public GameObject tilePrefab;
 	public GameObject tiles;
-	public int roadRadius;
+	public int roadRadius, initialRadius;
 
 	public Vector2 gridWorldSize; // defines the grid size
 	public float nodeRadius; // radius of each node/tile
@@ -107,6 +107,7 @@ public class Grid : MonoBehaviour
 		{
 			for (int j = 0; j < grid.GetLength(1); j++)
 			{
+				// Check all roads
                 if (grid[i, j].GetComponent<Node>().isRoad())
                 {
 					for(int k=-roadRadius; k != roadRadius+1; k++)
@@ -124,6 +125,24 @@ public class Grid : MonoBehaviour
 						
                     }
                 }
+                // Check the initial place
+                if (grid[i, j].GetComponent<Node>().isInitial())
+                {
+					for (int k = -initialRadius; k != initialRadius + 1; k++)
+					{
+						if (k + i > 0 && k + i < gridSizeX)
+						{
+							for (int h = -initialRadius; h != initialRadius + 1; h++)
+							{
+								if (h + j > 0 && h + j < gridSizeX)
+								{
+									grid[k + i, h + j].GetComponent<Node>().setNearRoad(true);
+								}
+							}
+						}
+
+					}
+				}
 			}
 		}
 	}

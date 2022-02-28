@@ -9,6 +9,7 @@ TagManager:
   - Tile
   - TileManager
   - Road
+  - Starting construction
   layers:
   - Default
   - TransparentFX
