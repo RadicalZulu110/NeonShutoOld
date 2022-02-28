@@ -7,22 +7,56 @@ public class Node : MonoBehaviour
 
 	public bool walkable; // walkable for cars and characters
 	public Vector3 worldPosition;
-	public bool ocupied;
+	public bool ocupied, nearRoad, road;
 
-	public Node(bool _walkable, Vector3 _worldPos)
+	public Node()
 	{
-		walkable = _walkable;
-		worldPosition = _worldPos;
 		ocupied = false;
+		nearRoad = false;
+		road = false;
 	}
 
+	// Getters
 	public bool isOcupied()
     {
 		return ocupied;
     }
 
+	public bool isNearRoad()
+    {
+		return nearRoad;
+    }
+
+	public bool isRoad()
+    {
+		return road;
+    }
+
+	public Vector3 getWorldPosition()
+    {
+		return worldPosition;
+    }
+
+	// Setters
 	public void setOcupied(bool o)
     {
 		ocupied = o;
+		if (ocupied == false)
+			road = false;
+    }
+
+	public void setNearRoad(bool nr)
+    {
+		nearRoad = nr;
+    }
+
+	public void setRoad(bool r)
+    {
+		road = r;
+    }
+
+	public void setWorldPosition(Vector3 wp)
+    {
+		worldPosition = wp;
     }
 }
