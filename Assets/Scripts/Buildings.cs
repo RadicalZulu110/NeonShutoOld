@@ -4,171 +4,68 @@ using UnityEngine;
 
 public class Buildings : MonoBehaviour
 {
-    private GameObject buildingToPlace, roadToPlace, initialToPlace;
-    public CustomCursor customCursor, customCursorRoad, customCursorInitial;
+    private GameObject buildingToPlace;
+    public CustomCursor customCursor;
     public Grid grid;
-    public GameObject[,] tiles;
+    public Node[,] tiles;
     public Camera camera;
-
-    GameObject nearNode;
+    Node nearNode;
     float distanceNode, dist;
     bool isDeleting;
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        tiles = grid.getGrid();
         isDeleting = false;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(grid == null)
-            grid = GameObject.FindGameObjectWithTag("Grid").GetComponent<Grid>();
-
-        if (tiles == null)
+        if(tiles == null)
             tiles = grid.getGrid();
 
-        // Create building
         if (Input.GetKeyDown(KeyCode.Mouse0) && buildingToPlace != null)
         {
             nearNode = null;
             distanceNode = float.MaxValue;
-            for(int i=0; i<tiles.GetLength(0); i++)
+            foreach(Node tile in tiles)
             {
-                for(int j=0; j<tiles.GetLength(1); j++)
+                dist = Vector3.Distance(tile.worldPosition, customCursor.gameObject.transform.position);
+                if(dist < distanceNode)
                 {
-                    if (!tiles[i,j].GetComponent<Node>().isOcupied() && tiles[i,j].activeInHierarchy)
-                    {
-                        dist = Vector3.Distance(tiles[i, j].transform.position, customCursor.gameObject.transform.position);
-                        if (dist < distanceNode)
-                        {
-                            distanceNode = dist;
-                            nearNode = tiles[i, j];
-                        }
-                    }
+                    distanceNode = dist;
+                    nearNode = tile;
                 }
             }
 
-            Instantiate(buildingToPlace, new Vector3(nearNode.transform.position.x, 2, nearNode.transform.position.z), Quaternion.identity);
-            nearNode.GetComponent<Node>().setOcupied(true);
+            Instantiate(buildingToPlace, nearNode.worldPosition, Quaternion.identity);
             buildingToPlace = null;
             customCursor.gameObject.SetActive(false);
             Cursor.visible = true;
-            grid.setTilesActive(false);
         }
 
-        // Create road
-        if (Input.GetKeyDown(KeyCode.Mouse0) && roadToPlace != null)
-        {
-            nearNode = null;
-            distanceNode = float.MaxValue;
-            for (int i = 0; i < tiles.GetLength(0); i++)
-            {
-                for (int j = 0; j < tiles.GetLength(1); j++)
-                {
-                    if (!tiles[i, j].GetComponent<Node>().isOcupied())
-                    {
-                        dist = Vector3.Distance(tiles[i, j].transform.position, customCursorRoad.gameObject.transform.position);
-                        if (dist < distanceNode)
-                        {
-                            distanceNode = dist;
-                            nearNode = tiles[i, j];
-                        }
-                    }
-                }
-            }
-
-            Instantiate(roadToPlace, new Vector3(nearNode.transform.position.x, 0.5f, nearNode.transform.position.z), Quaternion.identity);
-            nearNode.GetComponent<Node>().setOcupied(true);
-            nearNode.GetComponent<Node>().setRoad(true);
-            roadToPlace = null;
-            customCursorRoad.gameObject.SetActive(false);
-            Cursor.visible = true;
-            grid.setTilesActive(false);
-            grid.checkTilesRoads();
-        }
-
-        // Create initial building
-        if (Input.GetKeyDown(KeyCode.Mouse0) && initialToPlace != null)
-        {
-            nearNode = null;
-            distanceNode = float.MaxValue;
-            for (int i = 0; i < tiles.GetLength(0); i++)
-            {
-                for (int j = 0; j < tiles.GetLength(1); j++)
-                {
-                    if (!tiles[i, j].GetComponent<Node>().isOcupied() && tiles[i, j].activeInHierarchy)
-                    {
-                        dist = Vector3.Distance(tiles[i, j].transform.position, customCursorInitial.gameObject.transform.position);
-                        if (dist < distanceNode)
-                        {
-                            distanceNode = dist;
-                            nearNode = tiles[i, j];
-                        }
-                    }
-                }
-            }
-
-            Instantiate(initialToPlace, new Vector3(nearNode.transform.position.x, 2, nearNode.transform.position.z), Quaternion.identity);
-            nearNode.GetComponent<Node>().setOcupied(true);
-            nearNode.GetComponent<Node>().setInitial(true);
-            initialToPlace = null;
-            customCursorInitial.gameObject.SetActive(false);
-            Cursor.visible = true;
-            grid.setTilesActive(false);
-            grid.checkTilesRoads();
-        }
-
-        // Delete building or road
-        if (Input.GetKeyDown(KeyCode.Mouse0) && isDeleting)
+        if(Input.GetKeyDown(KeyCode.Mouse0) && isDeleting)
         {
             Ray ray = camera.ScreenPointToRay(Input.mousePosition);
             if(Physics.Raycast(ray, out RaycastHit hitInfo))
             {
-                if(hitInfo.collider.gameObject != null && (hitInfo.collider.gameObject.tag == "Buildings" || 
-                                                            hitInfo.collider.tag == "Road"))
+                if(hitInfo.collider.gameObject != null)
                 {
-                    grid.getTile(hitInfo.collider.gameObject.transform.position).GetComponent<Node>().setOcupied(false);
-                    grid.checkTilesRoads();
                     Destroy(hitInfo.collider.gameObject);
                 }
             }
         }
     }
 
-    // Button event to create a building
     public void createBuilding(GameObject building)
     {
-        grid.setTilesNearRoadActive(true);
         customCursor.gameObject.SetActive(true);
         Cursor.visible = false;
         buildingToPlace = building;
-        isDeleting = false;
     }
 
-    // Button event to create a road
-    public void createRoad(GameObject road)
-    {
-        grid.setTilesNearRoadActive(true);
-        customCursorRoad.gameObject.SetActive(true);
-        Cursor.visible = false;
-        roadToPlace = road;
-        isDeleting = false;
-    }
-
-    // Button event to create initial building
-    public void createInitial(GameObject building)
-    {
-        grid.setTilesActive(true);
-        customCursorInitial.gameObject.SetActive(true);
-        Cursor.visible = false;
-        initialToPlace = building;
-        isDeleting = false;
-    }
-
-    // Button event to delete a building or a road
     public void deleteBuilding()
     {
         if (isDeleting)

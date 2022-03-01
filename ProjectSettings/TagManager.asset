@@ -5,11 +5,10 @@ TagManager:
   serializedVersion: 2
   tags:
   - Grid
-  - Buildings
-  - Tile
-  - TileManager
-  - Road
-  - Starting construction
+  - buildings
+  - sellable - water
+  - sellable - food
+  - sellable - power
   layers:
   - Default
   - TransparentFX

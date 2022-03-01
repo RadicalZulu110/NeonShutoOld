@@ -4,13 +4,9 @@ using UnityEngine;
 
 public class Grid : MonoBehaviour
 {
-	public GameObject tilePrefab;
-	public GameObject tiles;
-	public int roadRadius, initialRadius;
-
 	public Vector2 gridWorldSize; // defines the grid size
 	public float nodeRadius; // radius of each node/tile
-	GameObject[,] grid;
+	Node[,] grid;
 	public LayerMask unwalkable;
 	float nodeDiameter; // node diameter = node radius * 2
 	int gridSizeX, gridSizeY; // defintion of x and y
@@ -21,12 +17,11 @@ public class Grid : MonoBehaviour
 		gridSizeX = Mathf.RoundToInt(gridWorldSize.x / nodeDiameter);
 		gridSizeY = Mathf.RoundToInt(gridWorldSize.y / nodeDiameter);
 		CreateGrid(); // creates the grid using the creategrid() function
-		this.gameObject.transform.localScale = new Vector3(gridWorldSize.x, 0.1f, gridWorldSize.y);
 	}
 
 	void CreateGrid()
 	{ // start of function
-		grid = new GameObject[gridSizeX, gridSizeY]; //creates the new grid with the gridsizex and y parameters
+		grid = new Node[gridSizeX, gridSizeY]; //creates the new grid with the gridsizex and y parameters
 		Vector3 worldBottomLeft = transform.position - Vector3.right * gridWorldSize.x / 2 - Vector3.forward * gridWorldSize.y / 2; // defines the world bottom left
 
 		for (int x = 0; x < gridSizeX; x++)
@@ -35,15 +30,12 @@ public class Grid : MonoBehaviour
 			{// while y = 0 y is less then gridsize y
 				Vector3 worldPoint = worldBottomLeft + Vector3.right * (x * nodeDiameter + nodeRadius) + Vector3.forward * (y * nodeDiameter + nodeRadius);
 				bool walkable = !(Physics.CheckSphere(worldPoint, nodeRadius, unwalkable));
-				grid[x, y] = Instantiate(tilePrefab, new Vector3(worldPoint.x, 0.1f, worldPoint.z), Quaternion.identity); // creates the new node with walkable and world point
-				grid[x, y].transform.SetParent(tiles.transform, true);
-				grid[x, y].SetActive(false);
+				grid[x, y] = new Node(walkable, worldPoint); // creates the new node with walkable and world point
 			}
 		}
 	}
 
-
-	public GameObject NodeFromWorldPoint(Vector3 worldPosition)
+	public Node NodeFromWorldPoint(Vector3 worldPosition)
 	{ // sets node from the world point
 		float percentX = (worldPosition.x + gridWorldSize.x / 2) / gridWorldSize.x;
 		float percentY = (worldPosition.z + gridWorldSize.y / 2) / gridWorldSize.y;
@@ -55,7 +47,7 @@ public class Grid : MonoBehaviour
 		return grid[x, y]; // returns the grid with the x and y values
 	}
 
-	/*void OnDrawGizmos()
+	void OnDrawGizmos()
 	{
 		Gizmos.DrawWireCube(transform.position, new Vector3(gridWorldSize.x, 1, gridWorldSize.y));
 
@@ -68,116 +60,23 @@ public class Grid : MonoBehaviour
 				Gizmos.DrawCube(n.worldPosition, Vector3.one * (nodeDiameter - .1f)); // draws a cube on each node
 			}
 		}
-	}*/
+	}
 
-	public GameObject[,] getGrid()
+	public Node[,] getGrid()
     {
 		return grid;
     }
-
-	public GameObject getTile(Vector3 position)
-    {
-		for(int i = 0; i<grid.GetLength(0); i++)
-        {
-			for(int j=0; j<grid.GetLength(1); j++)
-            {
-
-				if (position.x == grid[i,j].transform.position.x && position.z == grid[i, j].transform.position.z)
-					return grid[i, j];
-            }
-        }
-
-		return null;
-    }
-
-	// Check which tiles are near to a road and update the tiles
-	public void checkTilesRoads()
-    {
-		// Erase every near road
-		for (int i = 0; i < grid.GetLength(0); i++)
-		{
-			for (int j = 0; j < grid.GetLength(1); j++)
-			{
-				grid[i, j].GetComponent<Node>().setNearRoad(false);
-			}
-		}
-
-		// Check near road
-		for (int i = 0; i < grid.GetLength(0); i++)
-		{
-			for (int j = 0; j < grid.GetLength(1); j++)
-			{
-				// Check all roads
-                if (grid[i, j].GetComponent<Node>().isRoad())
-                {
-					for(int k=-roadRadius; k != roadRadius+1; k++)
-                    {
-						if(k+i > 0 && k+i < gridSizeX)
-                        {
-							for (int h = -roadRadius; h != roadRadius+1; h++)
-							{
-								if(h+j > 0 && h+j < gridSizeX)
-                                {
-									grid[k + i, h + j].GetComponent<Node>().setNearRoad(true);
-                                }
-							}
-						}
-						
-                    }
-                }
-                // Check the initial place
-                if (grid[i, j].GetComponent<Node>().isInitial())
-                {
-					for (int k = -initialRadius; k != initialRadius + 1; k++)
-					{
-						if (k + i > 0 && k + i < gridSizeX)
-						{
-							for (int h = -initialRadius; h != initialRadius + 1; h++)
-							{
-								if (h + j > 0 && h + j < gridSizeX)
-								{
-									grid[k + i, h + j].GetComponent<Node>().setNearRoad(true);
-								}
-							}
-						}
-
-					}
-				}
-			}
-		}
-	}
-
-	// Make all tiles visible or invisible
-	public void setTilesActive(bool ac)
-    {
-		for (int i = 0; i < grid.GetLength(0); i++)
-		{
-			for (int j = 0; j < grid.GetLength(1); j++)
-			{
-				grid[i, j].SetActive(ac);
-				if (grid[i, j].GetComponent<Node>().isOcupied())
-					grid[i, j].SetActive(false);
-			}
-		}
-	}
-
-	// Make near roads tile visible
-	public void setTilesNearRoadActive(bool ac)
-	{
-		for (int i = 0; i < grid.GetLength(0); i++)
-		{
-			for (int j = 0; j < grid.GetLength(1); j++)
-			{
-                if (grid[i, j].GetComponent<Node>().isNearRoad())
-                {
-					grid[i, j].SetActive(ac);
-
-					if (grid[i, j].GetComponent<Node>().isOcupied())
-						grid[i, j].SetActive(false);
-				}
-			}
-		}
-	}
 }
 
+public class Node
+{ // defines the nodes
 
+	public bool walkable; // walkable for cars and characters
+	public Vector3 worldPosition;
+
+	public Node(bool _walkable, Vector3 _worldPos)
+	{
+		walkable = _walkable;
+		worldPosition = _worldPos;
+	}
+}
