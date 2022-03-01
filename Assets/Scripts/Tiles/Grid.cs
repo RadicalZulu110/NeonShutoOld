@@ -110,6 +110,7 @@ public class Grid : MonoBehaviour
 				// Check all roads
                 if (grid[i, j].GetComponent<Node>().isRoad())
                 {
+					// Near roads
 					for(int k=-roadRadius; k != roadRadius+1; k++)
                     {
 						if(k+i > 0 && k+i < gridSizeX)
@@ -122,9 +123,23 @@ public class Grid : MonoBehaviour
                                 }
 							}
 						}
-						
                     }
-                }
+
+					// Adyacent to road
+					for (int k = -1; k != 2; k++)
+					{
+						if (k + i > 0 && k + i < gridSizeX)
+						{
+							for (int h = -1; h != 2; h++)
+							{
+								if (h + j > 0 && h + j < gridSizeX)
+								{
+									grid[k + i, h + j].GetComponent<Node>().setAdyacentRoad(true);
+								}
+							}
+						}
+					}
+				}
                 // Check the initial place
                 if (grid[i, j].GetComponent<Node>().isInitial())
                 {
@@ -141,6 +156,21 @@ public class Grid : MonoBehaviour
 							}
 						}
 
+					}
+
+					// Adyacent to road
+					for (int k = -1; k != 2; k++)
+					{
+						if (k + i > 0 && k + i < gridSizeX)
+						{
+							for (int h = -1; h != 2; h++)
+							{
+								if (h + j > 0 && h + j < gridSizeX)
+								{
+									grid[k + i, h + j].GetComponent<Node>().setAdyacentRoad(true);
+								}
+							}
+						}
 					}
 				}
 			}
@@ -170,6 +200,24 @@ public class Grid : MonoBehaviour
 			{
                 if (grid[i, j].GetComponent<Node>().isNearRoad())
                 {
+					grid[i, j].SetActive(ac);
+
+					if (grid[i, j].GetComponent<Node>().isOcupied())
+						grid[i, j].SetActive(false);
+				}
+			}
+		}
+	}
+
+	// Make near roads tile visible
+	public void setTilesAdyacentRoadActive(bool ac)
+	{
+		for (int i = 0; i < grid.GetLength(0); i++)
+		{
+			for (int j = 0; j < grid.GetLength(1); j++)
+			{
+				if (grid[i, j].GetComponent<Node>().isAdyacentRoad())
+				{
 					grid[i, j].SetActive(ac);
 
 					if (grid[i, j].GetComponent<Node>().isOcupied())

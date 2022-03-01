@@ -68,7 +68,7 @@ public class Buildings : MonoBehaviour
             {
                 for (int j = 0; j < tiles.GetLength(1); j++)
                 {
-                    if (!tiles[i, j].GetComponent<Node>().isOcupied())
+                    if (!tiles[i, j].GetComponent<Node>().isOcupied() && tiles[i, j].activeInHierarchy)
                     {
                         dist = Vector3.Distance(tiles[i, j].transform.position, customCursorRoad.gameObject.transform.position);
                         if (dist < distanceNode)
@@ -111,7 +111,7 @@ public class Buildings : MonoBehaviour
                 }
             }
 
-            Instantiate(initialToPlace, new Vector3(nearNode.transform.position.x, 2, nearNode.transform.position.z), Quaternion.identity);
+            Instantiate(initialToPlace, new Vector3(nearNode.transform.position.x, 0.5f, nearNode.transform.position.z), Quaternion.identity);
             nearNode.GetComponent<Node>().setOcupied(true);
             nearNode.GetComponent<Node>().setInitial(true);
             initialToPlace = null;
@@ -151,7 +151,7 @@ public class Buildings : MonoBehaviour
     // Button event to create a road
     public void createRoad(GameObject road)
     {
-        grid.setTilesNearRoadActive(true);
+        grid.setTilesAdyacentRoadActive(true);
         customCursorRoad.gameObject.SetActive(true);
         Cursor.visible = false;
         roadToPlace = road;
