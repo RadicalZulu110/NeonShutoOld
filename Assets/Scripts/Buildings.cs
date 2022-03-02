@@ -30,9 +30,23 @@ public class Buildings : MonoBehaviour
         if (tiles == null)
             tiles = grid.getGrid();
 
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            buildingToPlace = null;
+            customCursor.gameObject.SetActive(false);
+            Cursor.visible = true;
+            grid.setTilesActive(false);
+            roadToPlace = null;
+            customCursorRoad.gameObject.SetActive(false);
+            initialToPlace = null;
+            customCursorInitial.gameObject.SetActive(false);
+        }
+
         // Create building
         if (Input.GetKeyDown(KeyCode.Mouse0) && buildingToPlace != null)
         {
+            
+
             nearNode = null;
             distanceNode = float.MaxValue;
             for(int i=0; i<tiles.GetLength(0); i++)
