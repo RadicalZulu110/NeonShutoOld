@@ -35,7 +35,7 @@ public class Grid : MonoBehaviour
 			{// while y = 0 y is less then gridsize y
 				Vector3 worldPoint = worldBottomLeft + Vector3.right * (x * nodeDiameter + nodeRadius) + Vector3.forward * (y * nodeDiameter + nodeRadius);
 				bool walkable = !(Physics.CheckSphere(worldPoint, nodeRadius, unwalkable));
-				grid[x, y] = Instantiate(tilePrefab, new Vector3(worldPoint.x, 0.1f, worldPoint.z), Quaternion.identity); // creates the new node with walkable and world point
+				grid[x, y] = Instantiate(tilePrefab, new Vector3(worldPoint.x, 0f, worldPoint.z), Quaternion.identity); // creates the new node with walkable and world point
 				grid[x, y].transform.SetParent(tiles.transform, true);
 				grid[x, y].SetActive(false);
 			}
