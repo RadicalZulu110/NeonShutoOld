@@ -147,6 +147,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -5754084199372789682, guid: ca4ee766981bd5f47aa44cf49843985c, type: 3}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: 2272001217198551621, guid: 0ed7880c78b02dd42a15aac63a1fb2b5, type: 3}
     - target: {fileID: 919132149155446097, guid: ca4ee766981bd5f47aa44cf49843985c, type: 3}
       propertyPath: m_Name
       value: SM_HeroAsset
