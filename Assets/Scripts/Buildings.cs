@@ -10,6 +10,7 @@ public class Buildings : MonoBehaviour
     public GameObject[,] tiles;
     public Camera camera;
     public GameObject initialShadow, roadShadow, buildingShadow;
+    public AudioSource buildingPlaceSound;
 
     GameObject nearNode;
     bool isDeleting;
@@ -69,6 +70,7 @@ public class Buildings : MonoBehaviour
             nearNode = getNearestNode(customCursor.gameObject);
 
             Instantiate(buildingToPlace, new Vector3(nearNode.transform.position.x, 2, nearNode.transform.position.z), Quaternion.identity);
+            buildingPlaceSound.Play();
             nearNode.GetComponent<Node>().setOcupied(true);
             buildingToPlace = null;
             customCursor.gameObject.SetActive(false);
@@ -83,6 +85,7 @@ public class Buildings : MonoBehaviour
             nearNode = getNearestNode(customCursorRoad.gameObject);
 
             Instantiate(roadToPlace, new Vector3(nearNode.transform.position.x, 0.5f, nearNode.transform.position.z), Quaternion.identity);
+            buildingPlaceSound.Play();
             nearNode.GetComponent<Node>().setOcupied(true);
             nearNode.GetComponent<Node>().setRoad(true);
             roadToPlace = null;
@@ -97,6 +100,7 @@ public class Buildings : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Mouse0) && initialToPlace != null)
         {
             Instantiate(initialToPlace, new Vector3(nearNode.transform.position.x, 0, nearNode.transform.position.z), Quaternion.identity);
+            buildingPlaceSound.Play();
             nearNode.GetComponent<Node>().setOcupied(true);
             nearNode.GetComponent<Node>().setInitial(true);
             initialToPlace = null;
