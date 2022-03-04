@@ -69,8 +69,7 @@ public class Buildings : MonoBehaviour
         {
             nearNode = getNearestNode(customCursor.gameObject);
 
-            Instantiate(buildingToPlace, new Vector3(nearNode.transform.position.x, 2, nearNode.transform.position.z), Quaternion.identity);
-            buildingPlaceSound.Play();
+            Instantiate(buildingToPlace, new Vector3(nearNode.transform.position.x, 0, nearNode.transform.position.z), Quaternion.identity);
             nearNode.GetComponent<Node>().setOcupied(true);
             buildingToPlace = null;
             customCursor.gameObject.SetActive(false);
