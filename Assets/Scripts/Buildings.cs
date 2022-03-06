@@ -11,6 +11,7 @@ public class Buildings : MonoBehaviour
     public Camera camera;
     public GameObject initialShadow, roadShadow, buildingShadow;
     public AudioSource buildingPlaceSound;
+    public ParticleSystem buildingPlaceParticles;
 
     GameObject nearNode;
     bool isDeleting;
@@ -70,6 +71,9 @@ public class Buildings : MonoBehaviour
             nearNode = getNearestNode(customCursor.gameObject);
 
             Instantiate(buildingToPlace, new Vector3(nearNode.transform.position.x, 0, nearNode.transform.position.z), Quaternion.identity);
+            buildingPlaceSound.Play();
+            buildingPlaceParticles.transform.position = new Vector3(nearNode.transform.position.x, 0, nearNode.transform.position.z);
+            buildingPlaceParticles.Play();
             nearNode.GetComponent<Node>().setOcupied(true);
             buildingToPlace = null;
             customCursor.gameObject.SetActive(false);
@@ -85,6 +89,8 @@ public class Buildings : MonoBehaviour
 
             Instantiate(roadToPlace, new Vector3(nearNode.transform.position.x, 0.5f, nearNode.transform.position.z), Quaternion.identity);
             buildingPlaceSound.Play();
+            buildingPlaceParticles.transform.position = new Vector3(nearNode.transform.position.x, 0, nearNode.transform.position.z);
+            buildingPlaceParticles.Play();
             nearNode.GetComponent<Node>().setOcupied(true);
             nearNode.GetComponent<Node>().setRoad(true);
             roadToPlace = null;
@@ -100,6 +106,8 @@ public class Buildings : MonoBehaviour
         {
             Instantiate(initialToPlace, new Vector3(nearNode.transform.position.x, 0, nearNode.transform.position.z), Quaternion.identity);
             buildingPlaceSound.Play();
+            buildingPlaceParticles.transform.position = new Vector3(nearNode.transform.position.x, 0, nearNode.transform.position.z);
+            buildingPlaceParticles.Play();
             nearNode.GetComponent<Node>().setOcupied(true);
             nearNode.GetComponent<Node>().setInitial(true);
             initialToPlace = null;
@@ -153,6 +161,12 @@ public class Buildings : MonoBehaviour
 
         return res;
     }
+
+    // Spawn the building particle system for x seconds
+    /*private IEnumerator buildingParticles(int seconds)
+    {
+
+    }*/
 
     // Button event to create a building
     public void createBuilding(GameObject building)
