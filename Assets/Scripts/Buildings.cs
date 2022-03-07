@@ -13,6 +13,7 @@ public class Buildings : MonoBehaviour
     GameObject nearNode;
     float distanceNode, dist;
     bool isDeleting;
+    public GameManager gameManager;//need to change naming convention for this to be somthing else rather than gameManager
 
     // Start is called before the first frame update
     void Start()
@@ -67,9 +68,11 @@ public class Buildings : MonoBehaviour
 
             Instantiate(buildingToPlace, new Vector3(nearNode.transform.position.x, 2, nearNode.transform.position.z), Quaternion.identity);
             nearNode.GetComponent<Node>().setOcupied(true);
+            gameManager.BuyBuilding(buildingToPlace.GetComponent<BuildingCost>());
             buildingToPlace = null;
             customCursor.gameObject.SetActive(false);
             Cursor.visible = true;
+            gameManager.SetNoBuilding(gameManager.GetNoBuildings() + 1);
             grid.setTilesActive(false);
         }
 
@@ -144,6 +147,10 @@ public class Buildings : MonoBehaviour
                 if(hitInfo.collider.gameObject != null && (hitInfo.collider.gameObject.tag == "Buildings" || 
                                                             hitInfo.collider.tag == "Road"))
                 {
+                    if (hitInfo.collider.gameObject.tag == "Buildings")
+                    {
+                        gameManager.SetNoBuilding(gameManager.GetNoBuildings() - 1);
+                    }
                     grid.getTile(hitInfo.collider.gameObject.transform.position).GetComponent<Node>().setOcupied(false);
                     grid.checkTilesRoads();
                     Destroy(hitInfo.collider.gameObject);
