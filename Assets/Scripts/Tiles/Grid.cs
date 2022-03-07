@@ -126,7 +126,7 @@ public class Grid : MonoBehaviour
                     }
 
 					// Adyacent to road
-					for (int k = -1; k != 2; k++)
+					/*for (int k = -1; k != 2; k++)
 					{
 						if (k + i > 0 && k + i < gridSizeX)
 						{
@@ -137,6 +137,22 @@ public class Grid : MonoBehaviour
 									grid[k + i, h + j].GetComponent<Node>().setAdyacentRoad(true);
 								}
 							}
+						}
+					}*/
+
+					for (int k = -1; k != 2; k++)
+					{
+						if (k + i > 0 && k + i < gridSizeX)
+						{
+							grid[k + i, j].GetComponent<Node>().setAdyacentRoad(true);
+						}
+					}
+
+					for (int h = -1; h != 2; h++)
+					{
+						if (h + j > 0 && h + j < gridSizeX)
+						{
+							grid[i, j+h].GetComponent<Node>().setAdyacentRoad(true);
 						}
 					}
 				}
