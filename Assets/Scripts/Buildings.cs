@@ -31,22 +31,35 @@ public class Buildings : MonoBehaviour
         if (tiles == null)
             tiles = grid.getGrid();
 
+
         if (initialShadow.activeInHierarchy)
         {
             nearNode = getNearestNode(customCursorInitial.gameObject);
             initialShadow.transform.position = new Vector3(nearNode.transform.position.x, 0.1f, nearNode.transform.position.z);
+            if (Input.GetKeyDown(KeyCode.R))
+            {
+                rotateAroundY(initialShadow, 90);
+            }
         }
 
         if (roadShadow.activeInHierarchy)
         {
             nearNode = getNearestNode(customCursorRoad.gameObject);
             roadShadow.transform.position = new Vector3(nearNode.transform.position.x, 0.1f, nearNode.transform.position.z);
+            if (Input.GetKeyDown(KeyCode.R))
+            {
+                rotateAroundY(roadShadow, 90);
+            }
         }
 
         if (buildingShadow.activeInHierarchy)
         {
             nearNode = getNearestNode(customCursor.gameObject);
             buildingShadow.transform.position = new Vector3(nearNode.transform.position.x, 0.1f, nearNode.transform.position.z);
+            if (Input.GetKeyDown(KeyCode.R))
+            {
+                rotateAroundY(buildingShadow, 90);
+            }
         }
 
         // Cancel construction with escape
@@ -70,7 +83,7 @@ public class Buildings : MonoBehaviour
         {
             nearNode = getNearestNode(customCursor.gameObject);
 
-            Instantiate(buildingToPlace, new Vector3(nearNode.transform.position.x, 0, nearNode.transform.position.z), Quaternion.identity);
+            Instantiate(buildingToPlace, new Vector3(nearNode.transform.position.x, 0, nearNode.transform.position.z), buildingShadow.transform.rotation);
             buildingPlaceSound.Play();
             buildingPlaceParticles.transform.position = new Vector3(nearNode.transform.position.x, 0, nearNode.transform.position.z);
             buildingPlaceParticles.Play();
@@ -87,7 +100,7 @@ public class Buildings : MonoBehaviour
         {
             nearNode = getNearestNode(customCursorRoad.gameObject);
 
-            Instantiate(roadToPlace, new Vector3(nearNode.transform.position.x, 0.5f, nearNode.transform.position.z), Quaternion.identity);
+            Instantiate(roadToPlace, new Vector3(nearNode.transform.position.x, 0.5f, nearNode.transform.position.z), roadShadow.transform.rotation);
             buildingPlaceSound.Play();
             buildingPlaceParticles.transform.position = new Vector3(nearNode.transform.position.x, 0, nearNode.transform.position.z);
             buildingPlaceParticles.Play();
@@ -104,7 +117,7 @@ public class Buildings : MonoBehaviour
         // Create initial building
         if (Input.GetKeyDown(KeyCode.Mouse0) && initialToPlace != null)
         {
-            Instantiate(initialToPlace, new Vector3(nearNode.transform.position.x, 0, nearNode.transform.position.z), Quaternion.identity);
+            Instantiate(initialToPlace, new Vector3(nearNode.transform.position.x, 0, nearNode.transform.position.z), initialShadow.transform.rotation);
             buildingPlaceSound.Play();
             buildingPlaceParticles.transform.position = new Vector3(nearNode.transform.position.x, 0, nearNode.transform.position.z);
             buildingPlaceParticles.Play();
@@ -135,6 +148,8 @@ public class Buildings : MonoBehaviour
         }
     }
 
+    /********************************************************************************************************************************/
+
     // Private functions
     // Return the gameobject node nearest to the gameobject given
     private GameObject getNearestNode(GameObject gObject)
@@ -162,11 +177,13 @@ public class Buildings : MonoBehaviour
         return res;
     }
 
-    // Spawn the building particle system for x seconds
-    /*private IEnumerator buildingParticles(int seconds)
+    // Rotate a gameobject around the axis y
+    private void rotateAroundY(GameObject go, float degrees)
     {
+        go.transform.Rotate(0, degrees, 0);
+    }
 
-    }*/
+    /********************************************************************************************************************************/
 
     // Button event to create a building
     public void createBuilding(GameObject building)
