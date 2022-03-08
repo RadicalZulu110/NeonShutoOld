@@ -10,12 +10,15 @@ public class Buildings : MonoBehaviour
     public GameObject[,] tiles;
     public Camera camera;
     public GameObject initialShadow, roadShadow, buildingShadow;
-    public AudioSource buildingPlaceSound;
+    public AudioSource buildingPlaceSound, buildingRotateSound, deleteBuildingSound;
     public ParticleSystem buildingPlaceParticles;
 
     GameObject nearNode;
     bool isDeleting;
     public GameManager gameManager;//need to change naming convention for this to be somthing else rather than gameManager
+    private GameObject selectedObjectToDelete;
+    private Material[] originalMaterial;
+    public Material[] deletingMaterial;
 
     // Start is called before the first frame update
     void Start()
@@ -40,6 +43,7 @@ public class Buildings : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.R))
             {
                 rotateAroundY(initialShadow, 90);
+                buildingRotateSound.Play();
             }
         }
 
@@ -50,6 +54,7 @@ public class Buildings : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.R))
             {
                 rotateAroundY(roadShadow, 90);
+                buildingRotateSound.Play();
             }
         }
 
@@ -60,6 +65,7 @@ public class Buildings : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.R))
             {
                 rotateAroundY(buildingShadow, 90);
+                buildingRotateSound.Play();
             }
         }
 
@@ -77,6 +83,7 @@ public class Buildings : MonoBehaviour
             initialShadow.SetActive(false);
             roadShadow.SetActive(false);
             buildingShadow.SetActive(false);
+            isDeleting = false;
         }
 
         // Create building
@@ -84,7 +91,7 @@ public class Buildings : MonoBehaviour
         {
             nearNode = getNearestNode(customCursor.gameObject);
 
-            Instantiate(buildingToPlace, new Vector3(nearNode.transform.position.x, 0, nearNode.transform.position.z), buildingShadow.transform.rotation);
+            Instantiate(buildingToPlace, new Vector3(nearNode.transform.position.x, 2.4f, nearNode.transform.position.z), buildingShadow.transform.rotation);
             buildingPlaceSound.Play();
             buildingPlaceParticles.transform.position = new Vector3(nearNode.transform.position.x, 0, nearNode.transform.position.z);
             buildingPlaceParticles.Play();
@@ -103,7 +110,7 @@ public class Buildings : MonoBehaviour
         {
             nearNode = getNearestNode(customCursorRoad.gameObject);
 
-            Instantiate(roadToPlace, new Vector3(nearNode.transform.position.x, 0.5f, nearNode.transform.position.z), roadShadow.transform.rotation);
+            Instantiate(roadToPlace, new Vector3(nearNode.transform.position.x, 0, nearNode.transform.position.z), roadShadow.transform.rotation);
             buildingPlaceSound.Play();
             buildingPlaceParticles.transform.position = new Vector3(nearNode.transform.position.x, 0, nearNode.transform.position.z);
             buildingPlaceParticles.Play();
@@ -135,24 +142,40 @@ public class Buildings : MonoBehaviour
         }
 
         // Delete building or road
-        if (Input.GetKeyDown(KeyCode.Mouse0) && isDeleting)
+        if(selectedObjectToDelete != null)
         {
-            Ray ray = camera.ScreenPointToRay(Input.mousePosition);
-            if(Physics.Raycast(ray, out RaycastHit hitInfo))
+            selectedObjectToDelete.GetComponent<Renderer>().materials = originalMaterial;
+            selectedObjectToDelete = null;
+        }
+
+        if (isDeleting) // If Im deleting
+        {
+            Ray ray = camera.ScreenPointToRay(Input.mousePosition);     // Throw a ray in the mouse position
+            if (Physics.Raycast(ray, out RaycastHit hitInfo))           // If we get a hit with that ray
             {
-                if(hitInfo.collider.gameObject != null && (hitInfo.collider.gameObject.tag == "Buildings" || 
-                                                            hitInfo.collider.tag == "Road"))
+                if (hitInfo.collider.gameObject != null && (hitInfo.collider.gameObject.tag == "Buildings" ||      // We see if the gameobject hitted
+                                                            hitInfo.collider.tag == "Road"))                        // is a good one
                 {
-                    if (hitInfo.collider.gameObject.tag == "Buildings")
+                    selectedObjectToDelete = hitInfo.collider.gameObject;
+                    originalMaterial = selectedObjectToDelete.GetComponent<Renderer>().materials;
+                    selectedObjectToDelete.GetComponent<Renderer>().materials = deletingMaterial;
+
+                    if (Input.GetKeyDown(KeyCode.Mouse0))
                     {
-                        gameManager.SetNoBuilding(gameManager.GetNoBuildings() - 1);
+                        if (selectedObjectToDelete.tag == "Buildings")
+                        {
+                            gameManager.SetNoBuilding(gameManager.GetNoBuildings() - 1);
+                        }
+                        grid.getTile(selectedObjectToDelete.transform.position).GetComponent<Node>().setOcupied(false);
+                        grid.checkTilesRoads();
+                        Destroy(selectedObjectToDelete);
+                        deleteBuildingSound.Play();
+                        selectedObjectToDelete = null;
                     }
-                    grid.getTile(hitInfo.collider.gameObject.transform.position).GetComponent<Node>().setOcupied(false);
-                    grid.checkTilesRoads();
-                    Destroy(hitInfo.collider.gameObject);
                 }
             }
         }
+
     }
 
     /********************************************************************************************************************************/
