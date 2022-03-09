@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Buildings : MonoBehaviour
 {
-    private GameObject buildingToPlace, roadToPlace, initialToPlace;
+    private GameObject buildingToPlace, roadToPlace, initialToPlace, farmToPlace, batteryToPlace;
     public CustomCursor customCursor, customCursorRoad, customCursorInitial;
     public Grid grid;
     public GameObject[,] tiles;
@@ -67,6 +67,8 @@ public class Buildings : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             buildingToPlace = null;
+            farmToPlace = null;
+            batteryToPlace = null;
             customCursor.gameObject.SetActive(false);
             Cursor.visible = true;
             grid.setTilesActive(false);
@@ -94,6 +96,44 @@ public class Buildings : MonoBehaviour
             customCursor.gameObject.SetActive(false);
             Cursor.visible = true;
             gameManager.SetNoBuilding(gameManager.GetNoBuildings() + 1);
+            grid.setTilesActive(false);
+            buildingShadow.SetActive(false);
+        }
+
+        //Create farm
+        if (Input.GetKeyDown(KeyCode.Mouse0) && farmToPlace != null)
+        {
+            nearNode = getNearestNode(customCursor.gameObject);
+
+            Instantiate(farmToPlace, new Vector3(nearNode.transform.position.x, 0, nearNode.transform.position.z), buildingShadow.transform.rotation);
+            buildingPlaceSound.Play();
+            buildingPlaceParticles.transform.position = new Vector3(nearNode.transform.position.x, 0, nearNode.transform.position.z);
+            buildingPlaceParticles.Play();
+            nearNode.GetComponent<Node>().setOcupied(true);
+            gameManager.BuyBuilding(farmToPlace.GetComponent<BuildingCost>());
+            farmToPlace = null;
+            customCursor.gameObject.SetActive(false);
+            Cursor.visible = true;
+            gameManager.SetNoFarms(gameManager.GetNoFarms() + 1);
+            grid.setTilesActive(false);
+            buildingShadow.SetActive(false);
+        }
+
+        //Create battery
+        if (Input.GetKeyDown(KeyCode.Mouse0) && batteryToPlace != null)
+        {
+            nearNode = getNearestNode(customCursor.gameObject);
+
+            Instantiate(batteryToPlace, new Vector3(nearNode.transform.position.x, 0, nearNode.transform.position.z), buildingShadow.transform.rotation);
+            buildingPlaceSound.Play();
+            buildingPlaceParticles.transform.position = new Vector3(nearNode.transform.position.x, 0, nearNode.transform.position.z);
+            buildingPlaceParticles.Play();
+            nearNode.GetComponent<Node>().setOcupied(true);
+            gameManager.BuyBuilding(batteryToPlace.GetComponent<BuildingCost>());
+            batteryToPlace = null;
+            customCursor.gameObject.SetActive(false);
+            Cursor.visible = true;
+            gameManager.SetNoBatterys(gameManager.GetNoBatterys() + 1);
             grid.setTilesActive(false);
             buildingShadow.SetActive(false);
         }
@@ -145,7 +185,10 @@ public class Buildings : MonoBehaviour
                 {
                     if (hitInfo.collider.gameObject.tag == "Buildings")
                     {
-                        gameManager.SetNoBuilding(gameManager.GetNoBuildings() - 1);
+                        gameManager.AddPop(- hitInfo.collider.gameObject.GetComponent <BuildingCost>().GetPopulation());
+                        gameManager.AddFood(- hitInfo.collider.gameObject.GetComponent<BuildingCost>().GetFoodIncrease());
+                        gameManager.AddGold(- hitInfo.collider.gameObject.GetComponent<BuildingCost>().GetGoldIncrease());
+                        gameManager.AddEnergy(- hitInfo.collider.gameObject.GetComponent<BuildingCost>().GetEnergyIncrease());
                     }
                     grid.getTile(hitInfo.collider.gameObject.transform.position).GetComponent<Node>().setOcupied(false);
                     grid.checkTilesRoads();
@@ -195,6 +238,10 @@ public class Buildings : MonoBehaviour
     // Button event to create a building
     public void createBuilding(GameObject building)
     {
+        if (gameManager.GetFutureGold() - building.GetComponent<BuildingCost>().GoldCost < 0 ||
+            gameManager.GetFutureFood() - building.GetComponent<BuildingCost>().FoodCost < 0 ||
+            gameManager.GetFutureEnergy() - building.GetComponent<BuildingCost>().EnergyCost < 0) return;
+
         grid.setTilesNearRoadActive(true);
         customCursor.gameObject.SetActive(true);
         Cursor.visible = false;
@@ -203,9 +250,43 @@ public class Buildings : MonoBehaviour
         buildingShadow.SetActive(true);
     }
 
+    //button event to create a farm
+    public void createFarm(GameObject farm)
+    {
+        if (gameManager.GetFutureGold() - farm.GetComponent<BuildingCost>().GoldCost < 0 ||
+            gameManager.GetFutureFood() - farm.GetComponent<BuildingCost>().FoodCost < 0 ||
+            gameManager.GetFutureEnergy() - farm.GetComponent<BuildingCost>().EnergyCost < 0) return;
+
+        grid.setTilesNearRoadActive(true);
+        customCursor.gameObject.SetActive(true);
+        Cursor.visible = false;
+        farmToPlace = farm;
+        isDeleting = false;
+        buildingShadow.SetActive(true);
+    }
+
+    //button event to create a battery
+    public void createBattery(GameObject battery)
+    {
+        if (gameManager.GetFutureGold() - battery.GetComponent<BuildingCost>().GoldCost < 0 ||
+            gameManager.GetFutureFood() - battery.GetComponent<BuildingCost>().FoodCost < 0 ||
+            gameManager.GetFutureEnergy() - battery.GetComponent<BuildingCost>().EnergyCost < 0) return;
+
+        grid.setTilesNearRoadActive(true);
+        customCursor.gameObject.SetActive(true);
+        Cursor.visible = false;
+        farmToPlace = battery;
+        isDeleting = false;
+        buildingShadow.SetActive(true);
+    }
+
     // Button event to create a road
     public void createRoad(GameObject road)
     {
+        if (gameManager.GetFutureGold() - road.GetComponent<BuildingCost>().GoldCost < 0 ||
+            gameManager.GetFutureFood() - road.GetComponent<BuildingCost>().FoodCost < 0 ||
+            gameManager.GetFutureEnergy() - road.GetComponent<BuildingCost>().EnergyCost < 0) return;
+
         grid.setTilesAdyacentRoadActive(true);
         customCursorRoad.gameObject.SetActive(true);
         Cursor.visible = false;

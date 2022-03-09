@@ -10,6 +10,9 @@ TagManager:
   - TileManager
   - Road
   - Starting construction
+  - Undefined
+  - farm
+  - battery
   layers:
   - Default
   - TransparentFX
