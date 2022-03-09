@@ -91,7 +91,7 @@ public class Buildings : MonoBehaviour
         {
             nearNode = getNearestNode(customCursor.gameObject);
 
-            Instantiate(buildingToPlace, new Vector3(nearNode.transform.position.x, 2.4f, nearNode.transform.position.z), buildingShadow.transform.rotation);
+            Instantiate(buildingToPlace, new Vector3(nearNode.transform.position.x, 2f, nearNode.transform.position.z), buildingShadow.transform.rotation);
             buildingPlaceSound.Play();
             buildingPlaceParticles.transform.position = new Vector3(nearNode.transform.position.x, 0, nearNode.transform.position.z);
             buildingPlaceParticles.Play();
