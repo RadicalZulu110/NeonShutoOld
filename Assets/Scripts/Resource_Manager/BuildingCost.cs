@@ -4,16 +4,19 @@ using UnityEngine;
 
 public class BuildingCost : MonoBehaviour
 {
+    //set cost of the building type
     public int GoldCost;
     public int FoodCost;
     public int EnergyCost;
     public int PopCost;
 
+    //set amount of reasource to increase
     public int GoldIncrease;
     public int FoodIncrease;
     public int EnergyIncrease;
     public int PopIncrease;
 
+    //set time between increases in reasources
     public float timeBtwIncrease;
     private float nextIncreaseTime;
 
@@ -22,9 +25,13 @@ public class BuildingCost : MonoBehaviour
     private void Start()
     {
         gm = FindObjectOfType<GameManager>();
-        gm.SetFuturePop(PopIncrease);
+        gm.AddPop(PopIncrease);
+        gm.AddGold(GoldIncrease);
+        gm.AddFood(FoodIncrease);
+        gm.AddEnergy(EnergyIncrease);
     }
 
+    //Doing somthing wrong here 
     private void Update()
     {
         if (Time.time > nextIncreaseTime)
@@ -39,5 +46,20 @@ public class BuildingCost : MonoBehaviour
     public int GetPopulation()
     {
         return PopIncrease;
+    }
+
+    public int GetGoldIncrease()
+    {
+        return GoldIncrease;
+    }
+
+    public int GetFoodIncrease()
+    {
+        return FoodIncrease;
+    }
+
+    public int GetEnergyIncrease()
+    {
+        return EnergyIncrease;
     }
 }
