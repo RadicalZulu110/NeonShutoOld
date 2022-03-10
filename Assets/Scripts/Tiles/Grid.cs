@@ -38,6 +38,8 @@ public class Grid : MonoBehaviour
 				grid[x, y] = Instantiate(tilePrefab, new Vector3(worldPoint.x, 0f, worldPoint.z), Quaternion.identity); // creates the new node with walkable and world point
 				grid[x, y].transform.SetParent(tiles.transform, true);
 				grid[x, y].SetActive(false);
+				grid[x, y].GetComponent<Node>().setPosX(x);
+				grid[x, y].GetComponent<Node>().setPosY(y);
 			}
 		}
 	}
@@ -239,6 +241,34 @@ public class Grid : MonoBehaviour
 					if (grid[i, j].GetComponent<Node>().isOcupied())
 						grid[i, j].SetActive(false);
 				}
+			}
+		}
+	}
+
+	// Set nodes occupied
+	public void setNodesOccupied(int width, int height, Node actualNode)
+    {
+		actualNode.setOcupied(true);
+
+		for(int i = 0; i < width; i++)
+        {
+			for (int j = 0; j < height; j++)
+			{
+				grid[i + actualNode.getPosX(), j + actualNode.getPosY()].GetComponent<Node>().setOcupied(true);
+			}
+		}
+	}
+
+	// Set nodes unoccupied
+	public void setNodesUnoccupied(int width, int height, Node actualNode)
+	{
+		actualNode.setOcupied(false);
+
+		for (int i = 0; i < width; i++)
+		{
+			for (int j = 0; j < height; j++)
+			{
+				grid[i + actualNode.getPosX(), j + actualNode.getPosY()].GetComponent<Node>().setOcupied(false);
 			}
 		}
 	}

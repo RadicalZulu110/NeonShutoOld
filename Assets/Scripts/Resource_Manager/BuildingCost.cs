@@ -19,6 +19,8 @@ public class BuildingCost : MonoBehaviour
 
     private GameManager gm;
 
+    public int width, height;
+
     private void Start()
     {
         gm = FindObjectOfType<GameManager>();
@@ -39,5 +41,15 @@ public class BuildingCost : MonoBehaviour
     public int GetPopulation()
     {
         return PopIncrease;
+    }
+
+    public int getHGridWidth()
+    {
+        return width;
+    }
+
+    public int getHGridHeight()
+    {
+        return height;
     }
 }

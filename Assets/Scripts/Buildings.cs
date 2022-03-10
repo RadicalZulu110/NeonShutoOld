@@ -95,7 +95,8 @@ public class Buildings : MonoBehaviour
             buildingPlaceSound.Play();
             buildingPlaceParticles.transform.position = new Vector3(nearNode.transform.position.x, 0, nearNode.transform.position.z);
             buildingPlaceParticles.Play();
-            nearNode.GetComponent<Node>().setOcupied(true);
+            //nearNode.GetComponent<Node>().setOcupied(true);
+            grid.setNodesOccupied(buildingToPlace.GetComponent<BuildingCost>().getHGridWidth(), buildingToPlace.GetComponent<BuildingCost>().getHGridHeight(), nearNode.GetComponent<Node>());
             gameManager.BuyBuilding(buildingToPlace.GetComponent<BuildingCost>());
             buildingToPlace = null;
             customCursor.gameObject.SetActive(false);
@@ -212,6 +213,7 @@ public class Buildings : MonoBehaviour
     {
         go.transform.Rotate(0, degrees, 0);
     }
+
 
     /********************************************************************************************************************************/
 
