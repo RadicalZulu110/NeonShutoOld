@@ -6,19 +6,17 @@ public class T1PowerBuidlingButton : MonoBehaviour
 {
     public GameObject T1PowerText;
 
-    // Start is called before the first frame update
     void Start()
     {
         T1PowerText.SetActive(false);
     }
 
-    // Update is called once per frame
-    public void OnMouseOver()
+    public void OnOver()
     {
         T1PowerText.SetActive(true);
     }
 
-    public void OnMouseExit()
+    public void OnExit()
     {
         T1PowerText.SetActive(false);
     }
