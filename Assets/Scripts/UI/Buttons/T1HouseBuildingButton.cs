@@ -11,12 +11,12 @@ public class T1HouseBuildingButton : MonoBehaviour
         T1HouseText.SetActive(false);
     }
 
-    public void OnMouseOver()
+    public void OnOver()
     {
         T1HouseText.SetActive(true);
     }
 
-    public void OnMouseExit()
+    public void OnExit()
     {
         T1HouseText.SetActive(false);
     }

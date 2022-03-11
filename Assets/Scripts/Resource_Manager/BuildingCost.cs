@@ -8,12 +8,16 @@ public class BuildingCost : MonoBehaviour
     public int GoldCost;
     public int FoodCost;
     public int EnergyCost;
+    public int StoneCost;
+    public int CrystalCost;
     public int PopCost;
 
     //set amount of reasource to increase
     public int GoldIncrease;
     public int FoodIncrease;
     public int EnergyIncrease;
+    public int StoneIncrease;
+    public int CrystalIncrease;
     public int PopIncrease;
 
     //set time between increases in reasources
@@ -29,6 +33,8 @@ public class BuildingCost : MonoBehaviour
         gm.AddGold(GoldIncrease);
         gm.AddFood(FoodIncrease);
         gm.AddEnergy(EnergyIncrease);
+        gm.AddStone(StoneIncrease);
+        gm.AddCrystal(CrystalIncrease);
     }
 
     //Doing somthing wrong here 
@@ -40,6 +46,8 @@ public class BuildingCost : MonoBehaviour
             gm.gold += GoldIncrease;
             gm.energy += EnergyIncrease;
             gm.food += FoodIncrease;
+            gm.stone += StoneIncrease;
+            gm.crystal += CrystalIncrease;
         }
     }
 
@@ -61,5 +69,15 @@ public class BuildingCost : MonoBehaviour
     public int GetEnergyIncrease()
     {
         return EnergyIncrease;
+    }
+
+    public int GetCrystalIncrease()
+    {
+        return CrystalIncrease;
+    }
+
+    public int GetStoneIncrease()
+    {
+        return StoneIncrease;
     }
 }

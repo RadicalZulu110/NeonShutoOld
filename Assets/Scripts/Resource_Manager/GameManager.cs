@@ -9,17 +9,22 @@ public class GameManager : MonoBehaviour
 	private int NoBuildings;
 	public int gold;
 	public int currentGold;
-	private int futureGold;
 
 	private int NoBatterys;
 	public int energy;
 	public int currentEnergy;
-	private int futureEnergy;
 
 	private int NoFarms;
 	public int food;
 	public int currentFood;
-	private int futureFood;
+
+	public int NoStoneMines;
+	public int stone;
+	public int currentStone;
+
+	public int NoCrystalMines;
+	public int crystal;
+	public int currentCrystal;
 	
 	public int pop;
 	public int futurePop;
@@ -29,6 +34,8 @@ public class GameManager : MonoBehaviour
 	public Text goldDisplay;
 	public Text energyDisplay;
 	public Text foodDisplay;
+	public Text StoneDisplay;
+	public Text CrystalDisplay;
 	public Text popDisplay;
 
 	public CustomCursor customCursor;
@@ -38,6 +45,8 @@ public class GameManager : MonoBehaviour
 		NoBuildings = 0;
 		NoFarms = 0;
 		NoBatterys = 0;
+		NoCrystalMines = 0;
+		NoStoneMines = 0;
 	}
 
 	private void Update()
@@ -45,6 +54,8 @@ public class GameManager : MonoBehaviour
 		goldDisplay.text = (gold).ToString() + "(" + (currentGold).ToString() + ")";
 		energyDisplay.text = (energy).ToString() + "(" + (currentEnergy).ToString() + ")";
 		foodDisplay.text = (food).ToString() + "(" + (currentFood).ToString() + ")";
+		StoneDisplay.text = (stone).ToString() + "(" + (currentStone).ToString() + ")";
+		CrystalDisplay.text = (crystal).ToString() + "(" + (currentCrystal).ToString() + ")";
 		popDisplay.text = (currentPop).ToString();
 	}
 
@@ -65,6 +76,16 @@ public class GameManager : MonoBehaviour
 		{
 			food -= building.FoodCost;
 		}
+
+        if (stone >= building.StoneCost)
+        {
+			stone -= building.StoneCost;
+        }
+
+        if (crystal >= building.CrystalCost)
+        {
+			crystal -= building.CrystalCost;
+        }
 
 		if (pop >= building.PopCost)
 		{
@@ -102,7 +123,27 @@ public class GameManager : MonoBehaviour
 		NoBatterys = BatteryNo;
     }
 
-	public int GetFuturePop()
+	public int GetNoStoneMines()
+    {
+		return NoStoneMines;
+    }
+
+	public void SetNoStoneMines(int StoneMineNo)
+    {
+		NoStoneMines = StoneMineNo;
+    }
+
+	public int GetNoCrystalMines()
+    {
+		return NoCrystalMines;
+    }
+
+	public void SetNoCrystalMines(int CrystalMineNo)
+    {
+		NoCrystalMines = CrystalMineNo;
+    }
+
+	public int GetPop()
     {
 		return futurePop;
     }
@@ -112,36 +153,31 @@ public class GameManager : MonoBehaviour
 		futurePop = futurePopulation;
     }
 
-	public int GetFutureGold()
+	public int GetGold()
     {
 		return gold;
     }
 
-	public void SetFutureGold(int futureG)
-    {
-		futureGold = futureG;
-    }
-
-	public int GetFutureEnergy()
+	public int GetEnergy()
     {
 		return energy;
     }
-
-	public void SetFutureEnergy(int futureE)
-    {
-		futureEnergy = futureE;
-    }
-
-	public int GetFutureFood()
+	
+	public int GetFood()
     {
 		return food;
     }
 
-	public void SetFutureFood(int futureF)
+	public int GetStone()
     {
-		futureFood = futureF;
+		return stone;
     }
 
+	public int GetCrystal()
+    {
+		return crystal;
+    }
+	
 	public void AddGold(int gold)
     {
 		currentGold += gold;
@@ -155,6 +191,16 @@ public class GameManager : MonoBehaviour
 	public void AddEnergy(int Energy)
     {
 		currentEnergy += Energy;
+    }
+
+	public void AddCrystal(int Crystal)
+    {
+		currentCrystal += Crystal;
+    }
+
+	public void AddStone(int Stone)
+    {
+		currentStone += Stone;
     }
 
 	public void AddPop(int pop)

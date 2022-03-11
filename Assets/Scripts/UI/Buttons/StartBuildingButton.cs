@@ -6,19 +6,17 @@ public class StartBuildingButton : MonoBehaviour
 {
     public GameObject StartBuildingText;
 
-    // Start is called before the first frame update
     void Start()
     {
         StartBuildingText.SetActive(false);
     }
 
-    // Update is called once per frame
-    public void OnMouseOver()
+    public void OnOver()
     {
         StartBuildingText.SetActive(true);
     }
 
-    public void OnMouseExit()
+    public void OnExit()
     {
         StartBuildingText.SetActive(false);
     }

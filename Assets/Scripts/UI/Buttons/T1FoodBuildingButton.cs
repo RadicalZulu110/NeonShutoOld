@@ -6,19 +6,17 @@ public class T1FoodBuildingButton : MonoBehaviour
 {
     public GameObject T1FoodText;
 
-    // Start is called before the first frame update
     void Start()
     {
         T1FoodText.SetActive(false);
     }
 
-    // Update is called once per frame
-    public void OnMouseOver()
+    public void OnOver()
     {
         T1FoodText.SetActive(true);
     }
 
-    public void OnMouseExit()
+    public void OnExit()
     {
         T1FoodText.SetActive(false);
     }
