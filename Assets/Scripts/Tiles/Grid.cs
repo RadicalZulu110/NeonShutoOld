@@ -245,11 +245,40 @@ public class Grid : MonoBehaviour
 		}
 	}
 
+	// Get a list of gameobjects (nodes)
+	public List<GameObject> getNodes(int width, int height, Node actualNode)
+    {
+		List<GameObject> res = new List<GameObject>();
+
+		for (int i = 0; i < width; i++)
+		{
+			for (int j = 0; j < height; j++)
+			{
+				res.Add(grid[i + actualNode.getPosX(), j + actualNode.getPosY()]);
+			}
+		}
+
+		return res;
+	}
+
+	// True if all the nodes are free
+	public bool areNodesFree(int width, int height, Node actualNode)
+    {
+		for (int i = 0; i < width; i++)
+		{
+			for (int j = 0; j < height; j++)
+			{
+				if(grid[i + actualNode.getPosX(), j + actualNode.getPosY()].GetComponent<Node>().isOcupied())
+					return false;
+			}
+		}
+
+		return true;
+	}
+
 	// Set nodes occupied
 	public void setNodesOccupied(int width, int height, Node actualNode)
     {
-		actualNode.setOcupied(true);
-
 		for(int i = 0; i < width; i++)
         {
 			for (int j = 0; j < height; j++)
@@ -257,6 +286,7 @@ public class Grid : MonoBehaviour
 				grid[i + actualNode.getPosX(), j + actualNode.getPosY()].GetComponent<Node>().setOcupied(true);
 			}
 		}
+
 	}
 
 	// Set nodes unoccupied

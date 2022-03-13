@@ -19,11 +19,15 @@ public class Buildings : MonoBehaviour
     private GameObject selectedObjectToDelete;
     private Material[] originalMaterial;
     public Material[] deletingMaterial;
+    private Vector3 buildPos;
+    private BuildingCost buildingShadowScript, initialShadowScript;
 
     // Start is called before the first frame update
     void Start()
     {
         isDeleting = false;
+        buildingShadowScript = buildingShadow.GetComponent<BuildingCost>();
+        initialShadowScript = initialShadow.GetComponent<BuildingCost>();
     }
 
     // Update is called once per frame
@@ -39,12 +43,19 @@ public class Buildings : MonoBehaviour
         if (initialShadow.activeInHierarchy)
         {
             nearNode = getNearestNode(customCursorInitial.gameObject);
-            initialShadow.transform.position = new Vector3(nearNode.transform.position.x, 0.1f, nearNode.transform.position.z);
-            if (Input.GetKeyDown(KeyCode.R))
+            if (grid.areNodesFree(initialShadowScript.getGridWidth(), initialShadowScript.getGridHeight(), nearNode.GetComponent<Node>()))
             {
-                rotateAroundY(initialShadow, 90);
-                buildingRotateSound.Play();
+                buildPos = buildCentered(grid.getNodes(initialShadowScript.getGridWidth(), initialShadowScript.getGridHeight(), nearNode.GetComponent<Node>()));
+                initialShadow.transform.position = new Vector3(buildPos.x, 2f, buildPos.z);
+                //initialShadow.transform.position = new Vector3(nearNode.transform.position.x, 0.1f, nearNode.transform.position.z);
+                if (Input.GetKeyDown(KeyCode.R))
+                {
+                    rotateAroundY(initialShadow, 90);
+                    buildingRotateSound.Play();
+                    initialShadowScript.changeWH();
+                }
             }
+            
         }
 
         if (roadShadow.activeInHierarchy)
@@ -61,12 +72,17 @@ public class Buildings : MonoBehaviour
         if (buildingShadow.activeInHierarchy)
         {
             nearNode = getNearestNode(customCursor.gameObject);
-            buildingShadow.transform.position = new Vector3(nearNode.transform.position.x, 0.1f, nearNode.transform.position.z);
-            if (Input.GetKeyDown(KeyCode.R))
+            if(grid.areNodesFree(buildingShadowScript.getGridWidth(), buildingShadowScript.getGridHeight(), nearNode.GetComponent<Node>()))
             {
-                rotateAroundY(buildingShadow, 90);
-                buildingRotateSound.Play();
+                buildPos = buildCentered(grid.getNodes(buildingShadowScript.getGridWidth(), buildingShadowScript.getGridHeight(), nearNode.GetComponent<Node>()));
+                buildingShadow.transform.position = new Vector3(buildPos.x, 2f, buildPos.z);
+                if (Input.GetKeyDown(KeyCode.R))
+                {
+                    rotateAroundY(buildingShadow, 90);
+                    buildingRotateSound.Play();
+                }
             }
+            
         }
 
         // Cancel construction with escape
@@ -91,12 +107,14 @@ public class Buildings : MonoBehaviour
         {
             nearNode = getNearestNode(customCursor.gameObject);
 
-            Instantiate(buildingToPlace, new Vector3(nearNode.transform.position.x, 2f, nearNode.transform.position.z), buildingShadow.transform.rotation);
+            
             buildingPlaceSound.Play();
             buildingPlaceParticles.transform.position = new Vector3(nearNode.transform.position.x, 0, nearNode.transform.position.z);
             buildingPlaceParticles.Play();
             //nearNode.GetComponent<Node>().setOcupied(true);
-            grid.setNodesOccupied(buildingToPlace.GetComponent<BuildingCost>().getHGridWidth(), buildingToPlace.GetComponent<BuildingCost>().getHGridHeight(), nearNode.GetComponent<Node>());
+            buildPos = buildCentered(grid.getNodes(buildingToPlace.GetComponent<BuildingCost>().getGridWidth(), buildingToPlace.GetComponent<BuildingCost>().getGridHeight(), nearNode.GetComponent<Node>()));
+            grid.setNodesOccupied(buildingToPlace.GetComponent<BuildingCost>().getGridWidth(), buildingToPlace.GetComponent<BuildingCost>().getGridHeight(), nearNode.GetComponent<Node>());
+            Instantiate(buildingToPlace, new Vector3(buildPos.x, 2f, buildPos.z), buildingShadow.transform.rotation);
             gameManager.BuyBuilding(buildingToPlace.GetComponent<BuildingCost>());
             buildingToPlace = null;
             customCursor.gameObject.SetActive(false);
@@ -128,7 +146,13 @@ public class Buildings : MonoBehaviour
         // Create initial building
         if (Input.GetKeyDown(KeyCode.Mouse0) && initialToPlace != null)
         {
-            Instantiate(initialToPlace, new Vector3(nearNode.transform.position.x, 0, nearNode.transform.position.z), initialShadow.transform.rotation);
+            nearNode = getNearestNode(customCursorInitial.gameObject);
+
+            initialToPlace.GetComponent<BuildingCost>().setWH(initialShadowScript.getGridWidth(), initialShadowScript.getGridHeight());
+            buildPos = buildCentered(grid.getNodes(initialToPlace.GetComponent<BuildingCost>().getGridWidth(), initialToPlace.GetComponent<BuildingCost>().getGridHeight(), nearNode.GetComponent<Node>()));
+            grid.setNodesOccupied(initialToPlace.GetComponent<BuildingCost>().getGridWidth(), initialToPlace.GetComponent<BuildingCost>().getGridHeight(), nearNode.GetComponent<Node>());
+            Instantiate(initialToPlace, new Vector3(buildPos.x, 0f, buildPos.z), initialShadow.transform.rotation);
+            //Instantiate(initialToPlace, new Vector3(nearNode.transform.position.x, 0, nearNode.transform.position.z), initialShadow.transform.rotation);
             buildingPlaceSound.Play();
             buildingPlaceParticles.transform.position = new Vector3(nearNode.transform.position.x, 0, nearNode.transform.position.z);
             buildingPlaceParticles.Play();
@@ -166,6 +190,7 @@ public class Buildings : MonoBehaviour
                         if (selectedObjectToDelete.tag == "Buildings")
                         {
                             gameManager.SetNoBuilding(gameManager.GetNoBuildings() - 1);
+                            grid.setNodesUnoccupied(selectedObjectToDelete.GetComponent<BuildingCost>().getGridWidth(), selectedObjectToDelete.GetComponent<BuildingCost>().getGridHeight(), grid.getTile(selectedObjectToDelete.transform.position).GetComponent<Node>());
                         }
                         grid.getTile(selectedObjectToDelete.transform.position).GetComponent<Node>().setOcupied(false);
                         grid.checkTilesRoads();
@@ -214,6 +239,23 @@ public class Buildings : MonoBehaviour
         go.transform.Rotate(0, degrees, 0);
     }
 
+    // Build the building centered between the nodes
+    private Vector3 buildCentered(List<GameObject> nodes)
+    {
+        float x = 0, z = 0;
+
+        for(int i=0; i< nodes.Count; i++)
+        {
+            x += nodes[i].GetComponent<Node>().transform.position.x;
+            z += nodes[i].GetComponent<Node>().transform.position.z;
+        }
+
+        x /= nodes.Count;
+        z /= nodes.Count;
+
+        Vector3 res = new Vector3(x, 0, z);
+        return res;
+    }
 
     /********************************************************************************************************************************/
 
