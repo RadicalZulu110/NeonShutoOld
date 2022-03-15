@@ -92,6 +92,16 @@ public class Grid : MonoBehaviour
 		return null;
     }
 
+	public int getSizeX()
+    {
+		return gridSizeX;
+    }
+
+	public int getSizeY()
+    {
+		return gridSizeY;
+    }
+
 	// Check which tiles are near to a road and update the tiles
 	public void checkTilesRoads()
     {
@@ -227,7 +237,7 @@ public class Grid : MonoBehaviour
 		}
 	}
 
-	// Make near roads tile visible
+	// Make adyacent roads tile visible
 	public void setTilesAdyacentRoadActive(bool ac)
 	{
 		for (int i = 0; i < grid.GetLength(0); i++)
@@ -299,6 +309,54 @@ public class Grid : MonoBehaviour
 			for (int j = 0; j < height; j++)
 			{
 				grid[i + actualNode.getPosX(), j + actualNode.getPosY()].GetComponent<Node>().setOcupied(false);
+			}
+		}
+	}
+
+	// Make visible the line of roads available
+	public void setTilesLineRoadVisible(Node roadNode)
+    {
+		// Left
+		for(int i = 1; i < gridSizeX; i++)
+        {
+			if (roadNode.getPosX() - i == 0 || grid[roadNode.getPosX() - i, roadNode.getPosY()].GetComponent<Node>().isOcupied())
+				break;
+            else
+            {
+				grid[roadNode.getPosX() - i, roadNode.getPosY()].SetActive(true);
+			}
+        }
+
+		// Right
+		for(int i = 1; i < gridSizeX; i++)
+        {
+			if (roadNode.getPosX() + i == gridSizeX || grid[roadNode.getPosX() + i, roadNode.getPosY()].GetComponent<Node>().isOcupied())
+				break;
+			else
+			{
+				grid[roadNode.getPosX() + i, roadNode.getPosY()].SetActive(true);
+			}
+		}
+
+		// Up
+		for (int i = 1; i < gridSizeY; i++)
+		{
+			if (roadNode.getPosY() + i == gridSizeY || grid[roadNode.getPosX(), roadNode.getPosY() + i].GetComponent<Node>().isOcupied())
+				break;
+			else
+			{
+				grid[roadNode.getPosX(), roadNode.getPosY() + i].SetActive(true);
+			}
+		}
+
+		// Down
+		for (int i = 1; i < gridSizeY; i++)
+		{
+			if (roadNode.getPosY() - i == 0 || grid[roadNode.getPosX(), roadNode.getPosY() - i].GetComponent<Node>().isOcupied())
+				break;
+			else
+			{
+				grid[roadNode.getPosX(), roadNode.getPosY() - i].SetActive(true);
 			}
 		}
 	}

@@ -13,7 +13,7 @@ public class Buildings : MonoBehaviour
     public AudioSource buildingPlaceSound, buildingRotateSound, deleteBuildingSound;
     public ParticleSystem buildingPlaceParticles;
 
-    GameObject nearNode;
+    GameObject nearNode, firstNodeRoad, lastNodeRoad;
     bool isDeleting;
     public GameManager gameManager;//need to change naming convention for this to be somthing else rather than gameManager
     private GameObject selectedObjectToDelete;
@@ -21,6 +21,7 @@ public class Buildings : MonoBehaviour
     public Material[] deletingMaterial;
     private Vector3 buildPos;
     private BuildingCost buildingShadowScript, initialShadowScript;
+    private bool firstRoadPlaced;
 
     // Start is called before the first frame update
     void Start()
@@ -28,6 +29,7 @@ public class Buildings : MonoBehaviour
         isDeleting = false;
         buildingShadowScript = buildingShadow.GetComponent<BuildingCost>();
         initialShadowScript = initialShadow.GetComponent<BuildingCost>();
+        firstRoadPlaced = false;
     }
 
     // Update is called once per frame
@@ -62,7 +64,7 @@ public class Buildings : MonoBehaviour
         {
             nearNode = getNearestNode(customCursorRoad.gameObject);
             roadShadow.transform.position = new Vector3(nearNode.transform.position.x, 0.1f, nearNode.transform.position.z);
-            if (Input.GetKeyDown(KeyCode.R))
+            if (Input.GetKeyDown(KeyCode.R) && !firstRoadPlaced)
             {
                 rotateAroundY(roadShadow, 90);
                 buildingRotateSound.Play();
@@ -125,7 +127,7 @@ public class Buildings : MonoBehaviour
         }
 
         // Create road
-        if (Input.GetKeyDown(KeyCode.Mouse0) && roadToPlace != null)
+        if (Input.GetKeyDown(KeyCode.Mouse0) && roadToPlace != null && !Input.GetKey(KeyCode.LeftShift)) // Create sibgle road
         {
             nearNode = getNearestNode(customCursorRoad.gameObject);
 
@@ -141,6 +143,45 @@ public class Buildings : MonoBehaviour
             grid.setTilesActive(false);
             grid.checkTilesRoads();
             roadShadow.SetActive(false);
+        }
+
+        if (Input.GetKeyDown(KeyCode.Mouse0) && roadToPlace != null && Input.GetKey(KeyCode.LeftShift)) // First road of the line
+        {
+            nearNode = getNearestNode(customCursorRoad.gameObject);
+
+            Instantiate(roadToPlace, new Vector3(nearNode.transform.position.x, 0, nearNode.transform.position.z), roadShadow.transform.rotation);
+            buildingPlaceSound.Play();
+            buildingPlaceParticles.transform.position = new Vector3(nearNode.transform.position.x, 0, nearNode.transform.position.z);
+            buildingPlaceParticles.Play();
+            nearNode.GetComponent<Node>().setOcupied(true);
+            nearNode.GetComponent<Node>().setRoad(true);
+            //roadToPlace = null;
+            //customCursorRoad.gameObject.SetActive(false);
+            //Cursor.visible = true;
+            //grid.setTilesActive(false);
+            //grid.checkTilesRoads();
+            //roadShadow.SetActive(false);
+            firstRoadPlaced = true;
+            firstNodeRoad = nearNode;
+            grid.setTilesLineRoadVisible(firstNodeRoad.GetComponent<Node>());
+        }
+
+        if (Input.GetKeyDown(KeyCode.Mouse1) && roadToPlace != null && firstRoadPlaced) // Last road of the line
+        {
+            nearNode = getNearestNode(customCursorRoad.gameObject);
+
+            Instantiate(roadToPlace, new Vector3(nearNode.transform.position.x, 0, nearNode.transform.position.z), roadShadow.transform.rotation);
+            lastNodeRoad = nearNode;
+            buildLineRoads(firstNodeRoad, lastNodeRoad);
+            buildingPlaceSound.Play();
+            roadToPlace = null;
+            customCursorRoad.gameObject.SetActive(false);
+            Cursor.visible = true;
+            grid.setTilesActive(false);
+            grid.checkTilesRoads();
+            roadShadow.SetActive(false);
+            firstRoadPlaced = false;
+            grid.setTilesActive(false);
         }
 
         // Create initial building
@@ -255,6 +296,56 @@ public class Buildings : MonoBehaviour
 
         Vector3 res = new Vector3(x, 0, z);
         return res;
+    }
+
+    // Build line of roads
+    private void buildLineRoads(GameObject firstNode, GameObject lastNode)
+    {
+        // First we have to know in which direction we are building
+        float lineX = firstNode.transform.position.x - lastNode.transform.position.x;
+        float lineZ = firstNode.transform.position.z - lastNode.transform.position.z;
+
+        if(lineX < 0)   // Build to the right
+        {
+            for(int i = 2; i < Mathf.Abs(lineX*2)-2; i += 2)
+            {
+                Instantiate(roadToPlace, new Vector3(firstNode.transform.position.x + i, 0, firstNode.transform.position.z), roadShadow.transform.rotation);
+                buildingPlaceParticles.transform.position = new Vector3(firstNode.transform.position.x + i, 0, firstNode.transform.position.z);
+                buildingPlaceParticles.Play();
+                grid.getTile(new Vector3(firstNode.transform.position.x + i, 0, firstNode.transform.position.z)).GetComponent<Node>().setOcupied(true);
+                grid.getTile(new Vector3(firstNode.transform.position.x + i, 0, firstNode.transform.position.z)).GetComponent<Node>().setRoad(true);
+            }
+        }else if(lineX > 0) // Build to the left
+        {
+            for (int i = 2; i < lineX * 2-2; i += 2)
+            {
+                Instantiate(roadToPlace, new Vector3(firstNode.transform.position.x - i, 0, firstNode.transform.position.z), roadShadow.transform.rotation);
+                buildingPlaceParticles.transform.position = new Vector3(firstNode.transform.position.x - i, 0, firstNode.transform.position.z);
+                buildingPlaceParticles.Play();
+                grid.getTile(new Vector3(firstNode.transform.position.x - i, 0, firstNode.transform.position.z)).GetComponent<Node>().setOcupied(true);
+                grid.getTile(new Vector3(firstNode.transform.position.x - i, 0, firstNode.transform.position.z)).GetComponent<Node>().setRoad(true);
+            }
+        }else if(lineZ < 0) // Build up
+        {
+            for (int i = 2; i < Mathf.Abs(lineZ * 2)-2; i += 2)
+            {
+                Instantiate(roadToPlace, new Vector3(firstNode.transform.position.x, 0, firstNode.transform.position.z + i), roadShadow.transform.rotation);
+                buildingPlaceParticles.transform.position = new Vector3(firstNode.transform.position.x, 0, firstNode.transform.position.z + i);
+                buildingPlaceParticles.Play();
+                grid.getTile(new Vector3(firstNode.transform.position.x, 0, firstNode.transform.position.z + i)).GetComponent<Node>().setOcupied(true);
+                grid.getTile(new Vector3(firstNode.transform.position.x, 0, firstNode.transform.position.z + i)).GetComponent<Node>().setRoad(true);
+            }
+        }else if(lineZ > 0) // Build down
+        {
+            for (int i = 2; i < lineZ * 2-2; i += 2)
+            {
+                Instantiate(roadToPlace, new Vector3(firstNode.transform.position.x, 0, firstNode.transform.position.z - i), roadShadow.transform.rotation);
+                buildingPlaceParticles.transform.position = new Vector3(firstNode.transform.position.x, 0, firstNode.transform.position.z - i);
+                buildingPlaceParticles.Play();
+                grid.getTile(new Vector3(firstNode.transform.position.x, 0, firstNode.transform.position.z - i)).GetComponent<Node>().setOcupied(true);
+                grid.getTile(new Vector3(firstNode.transform.position.x, 0, firstNode.transform.position.z - i)).GetComponent<Node>().setRoad(true);
+            }
+        }
     }
 
     /********************************************************************************************************************************/
