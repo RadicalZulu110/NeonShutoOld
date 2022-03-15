@@ -28,7 +28,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7888493669040224080}
   m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -2.3038516, y: 0.42983258, z: 5.627371}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -95,19 +95,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c8e975ff248777142ac24a205ff36358, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GoldCost: 50
-  FoodCost: 50
-  EnergyCost: 50
+  GoldCost: 0
+  FoodCost: 0
+  EnergyCost: 0
   StoneCost: 0
   CrystalCost: 0
   PopCost: 0
-  GoldIncrease: 10
+  GoldIncrease: 0
   FoodIncrease: 0
   EnergyIncrease: 0
   StoneIncrease: 0
   CrystalIncrease: 0
-  PopIncrease: 10
-  timeBtwIncrease: 3
+  PopIncrease: 0
+  timeBtwIncrease: 0
   width: 1
   height: 1
 --- !u!65 &2047816370313498647
