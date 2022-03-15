@@ -38,6 +38,8 @@ public class Grid : MonoBehaviour
 				grid[x, y] = Instantiate(tilePrefab, new Vector3(worldPoint.x, 0f, worldPoint.z), Quaternion.identity); // creates the new node with walkable and world point
 				grid[x, y].transform.SetParent(tiles.transform, true);
 				grid[x, y].SetActive(false);
+				grid[x, y].GetComponent<Node>().setPosX(x);
+				grid[x, y].GetComponent<Node>().setPosY(y);
 			}
 		}
 	}
@@ -88,6 +90,16 @@ public class Grid : MonoBehaviour
         }
 
 		return null;
+    }
+
+	public int getSizeX()
+    {
+		return gridSizeX;
+    }
+
+	public int getSizeY()
+    {
+		return gridSizeY;
     }
 
 	// Check which tiles are near to a road and update the tiles
@@ -225,7 +237,7 @@ public class Grid : MonoBehaviour
 		}
 	}
 
-	// Make near roads tile visible
+	// Make adyacent roads tile visible
 	public void setTilesAdyacentRoadActive(bool ac)
 	{
 		for (int i = 0; i < grid.GetLength(0); i++)
@@ -239,6 +251,112 @@ public class Grid : MonoBehaviour
 					if (grid[i, j].GetComponent<Node>().isOcupied())
 						grid[i, j].SetActive(false);
 				}
+			}
+		}
+	}
+
+	// Get a list of gameobjects (nodes)
+	public List<GameObject> getNodes(int width, int height, Node actualNode)
+    {
+		List<GameObject> res = new List<GameObject>();
+
+		for (int i = 0; i < width; i++)
+		{
+			for (int j = 0; j < height; j++)
+			{
+				res.Add(grid[i + actualNode.getPosX(), j + actualNode.getPosY()]);
+			}
+		}
+
+		return res;
+	}
+
+	// True if all the nodes are free
+	public bool areNodesFree(int width, int height, Node actualNode)
+    {
+		for (int i = 0; i < width; i++)
+		{
+			for (int j = 0; j < height; j++)
+			{
+				if(grid[i + actualNode.getPosX(), j + actualNode.getPosY()].GetComponent<Node>().isOcupied())
+					return false;
+			}
+		}
+
+		return true;
+	}
+
+	// Set nodes occupied
+	public void setNodesOccupied(int width, int height, Node actualNode)
+    {
+		for(int i = 0; i < width; i++)
+        {
+			for (int j = 0; j < height; j++)
+			{
+				grid[i + actualNode.getPosX(), j + actualNode.getPosY()].GetComponent<Node>().setOcupied(true);
+			}
+		}
+
+	}
+
+	// Set nodes unoccupied
+	public void setNodesUnoccupied(int width, int height, Node actualNode)
+	{
+		actualNode.setOcupied(false);
+
+		for (int i = 0; i < width; i++)
+		{
+			for (int j = 0; j < height; j++)
+			{
+				grid[i + actualNode.getPosX(), j + actualNode.getPosY()].GetComponent<Node>().setOcupied(false);
+			}
+		}
+	}
+
+	// Make visible the line of roads available
+	public void setTilesLineRoadVisible(Node roadNode)
+    {
+		// Left
+		for(int i = 1; i < gridSizeX; i++)
+        {
+			if (roadNode.getPosX() - i == 0 || grid[roadNode.getPosX() - i, roadNode.getPosY()].GetComponent<Node>().isOcupied())
+				break;
+            else
+            {
+				grid[roadNode.getPosX() - i, roadNode.getPosY()].SetActive(true);
+			}
+        }
+
+		// Right
+		for(int i = 1; i < gridSizeX; i++)
+        {
+			if (roadNode.getPosX() + i == gridSizeX || grid[roadNode.getPosX() + i, roadNode.getPosY()].GetComponent<Node>().isOcupied())
+				break;
+			else
+			{
+				grid[roadNode.getPosX() + i, roadNode.getPosY()].SetActive(true);
+			}
+		}
+
+		// Up
+		for (int i = 1; i < gridSizeY; i++)
+		{
+			if (roadNode.getPosY() + i == gridSizeY || grid[roadNode.getPosX(), roadNode.getPosY() + i].GetComponent<Node>().isOcupied())
+				break;
+			else
+			{
+				grid[roadNode.getPosX(), roadNode.getPosY() + i].SetActive(true);
+			}
+		}
+
+		// Down
+		for (int i = 1; i < gridSizeY; i++)
+		{
+			if (roadNode.getPosY() - i == 0 || grid[roadNode.getPosX(), roadNode.getPosY() - i].GetComponent<Node>().isOcupied())
+				break;
+			else
+			{
+				grid[roadNode.getPosX(), roadNode.getPosY() - i].SetActive(true);
 			}
 		}
 	}

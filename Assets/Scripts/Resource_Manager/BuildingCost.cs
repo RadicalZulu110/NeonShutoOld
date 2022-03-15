@@ -26,15 +26,14 @@ public class BuildingCost : MonoBehaviour
 
     private GameManager gm;
 
+    public int width, height;
+    private List<GameObject> nodes; // Nodes where the building is built
+
     private void Start()
     {
         gm = FindObjectOfType<GameManager>();
-        gm.AddPop(PopIncrease);
-        gm.AddGold(GoldIncrease);
-        gm.AddFood(FoodIncrease);
-        gm.AddEnergy(EnergyIncrease);
-        gm.AddStone(StoneIncrease);
-        gm.AddCrystal(CrystalIncrease);
+        gm.SetFuturePop(PopIncrease);
+        nodes = new List<GameObject>();
     }
 
     //Doing somthing wrong here 
@@ -56,28 +55,37 @@ public class BuildingCost : MonoBehaviour
         return PopIncrease;
     }
 
-    public int GetGoldIncrease()
+    public int getGridWidth()
     {
-        return GoldIncrease;
+        return width;
     }
 
-    public int GetFoodIncrease()
+    public int getGridHeight()
     {
-        return FoodIncrease;
+        return height;
     }
 
-    public int GetEnergyIncrease()
+    public List<GameObject> getNodesBuilt()
     {
-        return EnergyIncrease;
+        return nodes;
     }
 
-    public int GetCrystalIncrease()
+    public void setNodesBuilt(List<GameObject> ns)
     {
-        return CrystalIncrease;
+        nodes = ns;
     }
 
-    public int GetStoneIncrease()
+    public void setWH(int w, int h)
     {
-        return StoneIncrease;
+        width = w;
+        height = h;
+    }
+
+    // Change the height with the width and viceversa
+    public void changeWH()
+    {
+        int haux = height;
+        height = width;
+        width = haux;
     }
 }

@@ -5,9 +5,9 @@ using UnityEngine;
 public class Node : MonoBehaviour
 { // defines the nodes
 
-	public bool walkable; // walkable for cars and characters
 	public Vector3 worldPosition;
 	public bool ocupied, nearRoad, adyacentRoad, road, initial;
+	public int posX, posY;
 
 	public Node()
 	{
@@ -44,6 +44,16 @@ public class Node : MonoBehaviour
 		return initial;
     }
 
+	public int getPosX()
+    {
+		return posX;
+    }
+
+	public int getPosY()
+	{
+		return posY;
+	}
+
 	public Vector3 getWorldPosition()
     {
 		return worldPosition;
@@ -76,6 +86,16 @@ public class Node : MonoBehaviour
     {
 		initial = i;
     }
+
+	public void setPosX(int x)
+    {
+		posX = x;
+    }
+
+	public void setPosY(int y)
+	{
+		posY = y;
+	}
 
 	public void setWorldPosition(Vector3 wp)
     {
