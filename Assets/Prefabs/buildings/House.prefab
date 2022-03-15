@@ -98,12 +98,18 @@ MonoBehaviour:
   GoldCost: 50
   FoodCost: 50
   EnergyCost: 50
+  StoneCost: 0
+  CrystalCost: 0
   PopCost: 0
   GoldIncrease: 10
   FoodIncrease: 0
   EnergyIncrease: 0
+  StoneIncrease: 0
+  CrystalIncrease: 0
   PopIncrease: 10
   timeBtwIncrease: 3
+  width: 1
+  height: 1
 --- !u!65 &2047816370313498647
 BoxCollider:
   m_ObjectHideFlags: 0

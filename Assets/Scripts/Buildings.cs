@@ -113,7 +113,6 @@ public class Buildings : MonoBehaviour
         {
             nearNode = getNearestNode(customCursor.gameObject);
 
-            
             buildingPlaceSound.Play();
             buildingPlaceParticles.transform.position = new Vector3(nearNode.transform.position.x, 0, nearNode.transform.position.z);
             buildingPlaceParticles.Play();
@@ -226,6 +225,24 @@ public class Buildings : MonoBehaviour
             roadShadow.SetActive(false);
         }
 
+        if (Input.GetKeyDown(KeyCode.Mouse0) && roadToPlace != null && firstRoadPlaced) // Last road of the line
+        {
+            nearNode = getNearestNode(customCursorRoad.gameObject);
+
+            Instantiate(roadToPlace, new Vector3(nearNode.transform.position.x, 0, nearNode.transform.position.z), roadShadow.transform.rotation);
+            lastNodeRoad = nearNode;
+            buildLineRoads(firstNodeRoad, lastNodeRoad);
+            buildingPlaceSound.Play();
+            roadToPlace = null;
+            customCursorRoad.gameObject.SetActive(false);
+            Cursor.visible = true;
+            grid.setTilesActive(false);
+            grid.checkTilesRoads();
+            roadShadow.SetActive(false);
+            firstRoadPlaced = false;
+            grid.setTilesActive(false);
+        }
+
         if (Input.GetKeyDown(KeyCode.Mouse0) && roadToPlace != null && Input.GetKey(KeyCode.LeftShift)) // First road of the line
         {
             nearNode = getNearestNode(customCursorRoad.gameObject);
@@ -247,23 +264,7 @@ public class Buildings : MonoBehaviour
             grid.setTilesLineRoadVisible(firstNodeRoad.GetComponent<Node>());
         }
 
-        if (Input.GetKeyDown(KeyCode.Mouse1) && roadToPlace != null && firstRoadPlaced) // Last road of the line
-        {
-            nearNode = getNearestNode(customCursorRoad.gameObject);
-
-            Instantiate(roadToPlace, new Vector3(nearNode.transform.position.x, 0, nearNode.transform.position.z), roadShadow.transform.rotation);
-            lastNodeRoad = nearNode;
-            buildLineRoads(firstNodeRoad, lastNodeRoad);
-            buildingPlaceSound.Play();
-            roadToPlace = null;
-            customCursorRoad.gameObject.SetActive(false);
-            Cursor.visible = true;
-            grid.setTilesActive(false);
-            grid.checkTilesRoads();
-            roadShadow.SetActive(false);
-            firstRoadPlaced = false;
-            grid.setTilesActive(false);
-        }
+        
 
         // Create initial building
         if (Input.GetKeyDown(KeyCode.Mouse0) && initialToPlace != null)
