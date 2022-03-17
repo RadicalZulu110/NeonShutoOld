@@ -19,25 +19,25 @@ public class timer : MonoBehaviour
     }
 
     // Update is called once per frame
-     private void Update()
+    private void Update()
     {
         if (Time.time > nextIncreaseTime)
         {
             nextIncreaseTime = Time.time + timeBtwIncrease;
             Debug.Log(seconds + "seconds");
             // Debug.Log(seconds + " seconds");
-    if (seconds <= 59)
-    {
-        seconds++;
-    }
-
-
-     else if (seconds >= 59)
-        {
-           seconds = 0;
-          min = min+1;
-          Debug.Log(min);
-         }
+            
+            if (seconds <= 59)
+            {
+                seconds++;
+            }
+            
+            else if (seconds >= 59)
+            {
+                seconds = 0;
+                min = min+1;
+                Debug.Log(min);
+            }
         
 
     
