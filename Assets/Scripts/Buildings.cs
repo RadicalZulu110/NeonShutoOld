@@ -48,7 +48,7 @@ public class Buildings : MonoBehaviour
             if (grid.areNodesFree(initialShadowScript.getGridWidth(), initialShadowScript.getGridHeight(), nearNode.GetComponent<Node>()))
             {
                 buildPos = buildCentered(grid.getNodes(initialShadowScript.getGridWidth(), initialShadowScript.getGridHeight(), nearNode.GetComponent<Node>()));
-                initialShadow.transform.position = new Vector3(buildPos.x, 2f, buildPos.z);
+                initialShadow.transform.position = new Vector3(buildPos.x, 0.3f, buildPos.z);
                 //initialShadow.transform.position = new Vector3(nearNode.transform.position.x, 0.1f, nearNode.transform.position.z);
                 if (Input.GetKeyDown(KeyCode.R))
                 {
@@ -113,6 +113,7 @@ public class Buildings : MonoBehaviour
         {
             nearNode = getNearestNode(customCursor.gameObject);
 
+            
             buildingPlaceSound.Play();
             buildingPlaceParticles.transform.position = new Vector3(nearNode.transform.position.x, 0, nearNode.transform.position.z);
             buildingPlaceParticles.Play();
@@ -225,24 +226,6 @@ public class Buildings : MonoBehaviour
             roadShadow.SetActive(false);
         }
 
-        if (Input.GetKeyDown(KeyCode.Mouse0) && roadToPlace != null && firstRoadPlaced) // Last road of the line
-        {
-            nearNode = getNearestNode(customCursorRoad.gameObject);
-
-            Instantiate(roadToPlace, new Vector3(nearNode.transform.position.x, 0, nearNode.transform.position.z), roadShadow.transform.rotation);
-            lastNodeRoad = nearNode;
-            buildLineRoads(firstNodeRoad, lastNodeRoad);
-            buildingPlaceSound.Play();
-            roadToPlace = null;
-            customCursorRoad.gameObject.SetActive(false);
-            Cursor.visible = true;
-            grid.setTilesActive(false);
-            grid.checkTilesRoads();
-            roadShadow.SetActive(false);
-            firstRoadPlaced = false;
-            grid.setTilesActive(false);
-        }
-
         if (Input.GetKeyDown(KeyCode.Mouse0) && roadToPlace != null && Input.GetKey(KeyCode.LeftShift)) // First road of the line
         {
             nearNode = getNearestNode(customCursorRoad.gameObject);
@@ -264,7 +247,23 @@ public class Buildings : MonoBehaviour
             grid.setTilesLineRoadVisible(firstNodeRoad.GetComponent<Node>());
         }
 
-        
+        if (Input.GetKeyDown(KeyCode.Mouse1) && roadToPlace != null && firstRoadPlaced) // Last road of the line
+        {
+            nearNode = getNearestNode(customCursorRoad.gameObject);
+
+            Instantiate(roadToPlace, new Vector3(nearNode.transform.position.x, 0, nearNode.transform.position.z), roadShadow.transform.rotation);
+            lastNodeRoad = nearNode;
+            buildLineRoads(firstNodeRoad, lastNodeRoad);
+            buildingPlaceSound.Play();
+            roadToPlace = null;
+            customCursorRoad.gameObject.SetActive(false);
+            Cursor.visible = true;
+            grid.setTilesActive(false);
+            grid.checkTilesRoads();
+            roadShadow.SetActive(false);
+            firstRoadPlaced = false;
+            grid.setTilesActive(false);
+        }
 
         // Create initial building
         if (Input.GetKeyDown(KeyCode.Mouse0) && initialToPlace != null)
@@ -277,7 +276,7 @@ public class Buildings : MonoBehaviour
             Instantiate(initialToPlace, new Vector3(buildPos.x, 0f, buildPos.z), initialShadow.transform.rotation);
             //Instantiate(initialToPlace, new Vector3(nearNode.transform.position.x, 0, nearNode.transform.position.z), initialShadow.transform.rotation);
             buildingPlaceSound.Play();
-            buildingPlaceParticles.transform.position = new Vector3(nearNode.transform.position.x, 0, nearNode.transform.position.z);
+            buildingPlaceParticles.transform.position = new Vector3(nearNode.transform.position.x, 0.3f, nearNode.transform.position.z);
             buildingPlaceParticles.Play();
             nearNode.GetComponent<Node>().setOcupied(true);
             nearNode.GetComponent<Node>().setInitial(true);
@@ -310,10 +309,15 @@ public class Buildings : MonoBehaviour
 
                     if (Input.GetKeyDown(KeyCode.Mouse0))
                     {
-                        
                         if (selectedObjectToDelete.tag == "Buildings")
                         {
                             gameManager.SetNoBuilding(gameManager.GetNoBuildings() - 1);
+                            gameManager.AddPop(-hitInfo.collider.gameObject.GetComponent<BuildingCost>().GetPopulation());
+                            gameManager.AddFood(-hitInfo.collider.gameObject.GetComponent<BuildingCost>().GetFoodIncrease());
+                            gameManager.AddGold(-hitInfo.collider.gameObject.GetComponent<BuildingCost>().GetGoldIncrease());
+                            gameManager.AddEnergy(-hitInfo.collider.gameObject.GetComponent<BuildingCost>().GetEnergyIncrease());
+                            gameManager.AddStone(-hitInfo.collider.gameObject.GetComponent<BuildingCost>().GetStoneIncrease());
+                            gameManager.AddCrystal(-hitInfo.collider.gameObject.GetComponent<BuildingCost>().GetCrystalIncrease());
                             grid.setNodesUnoccupied(selectedObjectToDelete.GetComponent<BuildingCost>().getGridWidth(), selectedObjectToDelete.GetComponent<BuildingCost>().getGridHeight(), grid.getTile(selectedObjectToDelete.transform.position).GetComponent<Node>());
                         }
                         grid.getTile(selectedObjectToDelete.transform.position).GetComponent<Node>().setOcupied(false);

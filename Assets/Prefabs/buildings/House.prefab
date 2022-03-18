@@ -95,13 +95,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c8e975ff248777142ac24a205ff36358, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GoldCost: 50
-  FoodCost: 50
+  GoldCost: 100
+  FoodCost: 100
   EnergyCost: 50
   StoneCost: 0
   CrystalCost: 0
   PopCost: 0
-  GoldIncrease: 1000
+  GoldIncrease: 50
   FoodIncrease: 0
   EnergyIncrease: 0
   StoneIncrease: 0
