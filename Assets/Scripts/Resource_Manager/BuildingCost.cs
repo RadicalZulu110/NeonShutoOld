@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class BuildingCost : MonoBehaviour
 {
+    public int width, height;
+
     //set cost of the building type
     public int GoldCost;
     public int FoodCost;
@@ -79,5 +81,29 @@ public class BuildingCost : MonoBehaviour
     public int GetStoneIncrease()
     {
         return StoneIncrease;
+    }
+
+    public int getGridWidth()
+    {
+        return width;
+    }
+
+    public int getGridHeight()
+    {
+        return height;
+    }
+
+    public void setWH(int w, int h)
+    {
+        width = w;
+        height = h;
+    }
+
+    // Change the height with the width and viceversa
+    public void changeWH()
+    {
+        int haux = height;
+        height = width;
+        width = haux;
     }
 }
