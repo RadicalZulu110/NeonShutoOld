@@ -9,7 +9,7 @@ public class Buildings : MonoBehaviour
     public Grid grid;
     public GameObject[,] tiles;
     public Camera camera;
-    public GameObject initialShadow, roadShadow, buildingShadow;
+    public GameObject initialShadow, roadShadow, buildingShadow, farmShadow;
     public AudioSource buildingPlaceSound, buildingRotateSound, deleteBuildingSound;
     public ParticleSystem buildingPlaceParticles;
 
@@ -120,7 +120,7 @@ public class Buildings : MonoBehaviour
             //nearNode.GetComponent<Node>().setOcupied(true);
             buildPos = buildCentered(grid.getNodes(buildingToPlace.GetComponent<BuildingCost>().getGridWidth(), buildingToPlace.GetComponent<BuildingCost>().getGridHeight(), nearNode.GetComponent<Node>()));
             grid.setNodesOccupied(buildingToPlace.GetComponent<BuildingCost>().getGridWidth(), buildingToPlace.GetComponent<BuildingCost>().getGridHeight(), nearNode.GetComponent<Node>());
-            Instantiate(buildingToPlace, new Vector3(buildPos.x, 2f, buildPos.z), buildingShadow.transform.rotation);
+            Instantiate(buildingToPlace, new Vector3(nearNode.transform.position.x, 1.7f, nearNode.transform.position.z), buildingShadow.transform.rotation);
             gameManager.BuyBuilding(buildingToPlace.GetComponent<BuildingCost>());
             buildingToPlace = null;
             customCursor.gameObject.SetActive(false);
@@ -273,10 +273,10 @@ public class Buildings : MonoBehaviour
             initialToPlace.GetComponent<BuildingCost>().setWH(initialShadowScript.getGridWidth(), initialShadowScript.getGridHeight());
             buildPos = buildCentered(grid.getNodes(initialToPlace.GetComponent<BuildingCost>().getGridWidth(), initialToPlace.GetComponent<BuildingCost>().getGridHeight(), nearNode.GetComponent<Node>()));
             grid.setNodesOccupied(initialToPlace.GetComponent<BuildingCost>().getGridWidth(), initialToPlace.GetComponent<BuildingCost>().getGridHeight(), nearNode.GetComponent<Node>());
-            Instantiate(initialToPlace, new Vector3(buildPos.x, 0f, buildPos.z), initialShadow.transform.rotation);
+            Instantiate(initialToPlace, new Vector3(buildPos.x, 0.1f, buildPos.z), initialShadow.transform.rotation);
             //Instantiate(initialToPlace, new Vector3(nearNode.transform.position.x, 0, nearNode.transform.position.z), initialShadow.transform.rotation);
             buildingPlaceSound.Play();
-            buildingPlaceParticles.transform.position = new Vector3(nearNode.transform.position.x, 0.3f, nearNode.transform.position.z);
+            buildingPlaceParticles.transform.position = new Vector3(nearNode.transform.position.x, 0, nearNode.transform.position.z);
             buildingPlaceParticles.Play();
             nearNode.GetComponent<Node>().setOcupied(true);
             nearNode.GetComponent<Node>().setInitial(true);
